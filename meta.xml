@@ -8,5 +8,6 @@
   <export function="clear" type="shared" />
   <export function="show" type="shared" />
   <export function="output" type="shared" />
+  <export function="isVisible" type="shared" />
   <export function="useDefaultOutput" type="server" />
 </meta>

@@ -11,6 +11,10 @@ function show(player, bool)
   triggerClientEvent(player, "onChat2Show", player, bool)
 end
 
+function isVisible(player)
+  return getElementData(player, "chat2IsVisible", false)
+end
+
 function output(player, message)
   triggerClientEvent(player, "onChat2Output", player, message)
 end

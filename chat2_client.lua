@@ -52,6 +52,11 @@ function show(bool)
 
   local eval = "show(" .. tostring(bool) .. ");"
   execute(eval)
+  setElementData(localPlayer, "chat2IsVisible", bool)
+end
+
+function isVisible()
+  return getElementData(localPlayer, "chat2IsVisible", false)
 end
 
 function onResourceStart()
