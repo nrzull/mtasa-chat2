@@ -1,4 +1,7 @@
 addEvent("onChat2SendMessage", true)
+addEvent("onPlayerChat2")
+
+local isDefaultOutput
 
 function clear(player)
   triggerClientEvent(player, "onChat2Clear", player)
@@ -12,16 +15,25 @@ function output(player, message)
   triggerClientEvent(player, "onChat2Output", player, message)
 end
 
+function useDefaultOutput(bool)
+  isDefaultOutput = bool
+end
+
 function onChatSendMessage(message)
   local sender = client
   local nickname = getPlayerName(sender)
 
-  if string.len(message) == 0 then
+  if type(message) ~= "string" or string.len(message) == 0 then
     return
   end
 
   if string.sub(message, 0, 1) == "/" then
     handleCommand(sender, message)
+    return
+  end
+
+  if not isDefaultOutput then
+    triggerEvent("onPlayerChat2", root, sender, message)
     return
   end
 
