@@ -34,9 +34,17 @@
         display: none;
       }
 
+      .chat__messages-container {
+        position: absolute;
+        max-height: 100%;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+      }
+
       .chat__messages {
         position: relative;
-        max-height: 80%;
+        height: 80%;
         overflow-y: scroll;
       }
 
@@ -87,7 +95,9 @@
     </style>
 
     <div class="chat hidden">
-      <div class="chat__messages"></div>
+      <div class="chat__messages">
+        <div class="chat__messages-container"></div>
+      </div>
       <input maxlength="96" type="text" class="chat__input hidden" />
     </div>
 
@@ -184,7 +194,7 @@
       }
 
       function render() {
-        const root = document.querySelector(".chat__messages");
+        const root = document.querySelector(".chat__messages-container");
         const rootFragment = document.createDocumentFragment();
         root.innerHTML = "";
 
