@@ -8,6 +8,10 @@ function show(player, bool)
   triggerClientEvent(player, "onChat2Show", player, bool)
 end
 
+function output(player, message)
+  triggerClientEvent(player, "onChat2Output", player, message)
+end
+
 function onChatSendMessage(message)
   local sender = client
   local nickname = getPlayerName(sender)
@@ -23,7 +27,7 @@ function onChatSendMessage(message)
 
   for _, player in ipairs(getElementsByType("player")) do
     local text = string.format("%s#ffffff: %s", nickname, message)
-    triggerClientEvent(player, "onChat2ReceiveMessage", player, text)
+    output(player, text)
   end
 end
 

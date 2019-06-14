@@ -5,7 +5,7 @@ local chatInstanceLoaded
 addEvent("onChat2Loaded")
 addEvent("onChat2Input")
 addEvent("onChat2SendMessage")
-addEvent("onChat2ReceiveMessage", true)
+addEvent("onChat2Output", true)
 addEvent("onChat2Clear", true)
 addEvent("onChat2Show", true)
 
@@ -67,7 +67,7 @@ function onChatSendMessage(message)
   triggerServerEvent("onChat2SendMessage", resourceRoot, message)
 end
 
-function onChatReceiveMessage(message)
+function output(message)
   local eval = string.format("addMessage(%s)", toJSON(message))
   execute(eval)
 end
@@ -76,6 +76,6 @@ addEventHandler("onClientResourceStart", resourceRoot, onResourceStart)
 addEventHandler("onChat2Loaded", resourceRoot, onChatLoaded)
 addEventHandler("onChat2Input", resourceRoot, onChatInput)
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
-addEventHandler("onChat2ReceiveMessage", localPlayer, onChatReceiveMessage)
+addEventHandler("onChat2Output", localPlayer, output)
 addEventHandler("onChat2Clear", localPlayer, clear)
 addEventHandler("onChat2Show", localPlayer, show)

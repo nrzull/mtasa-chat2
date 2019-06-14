@@ -5,9 +5,7 @@
   <script src="chat2_client.lua" type="client" />
   <file src="index.html" />
 
-  <export function="clear" type="server" />
-  <export function="clear" type="client" />
-
-  <export function="show" type="server" />
-  <export function="show" type="client" />
+  <export function="clear" type="shared" />
+  <export function="show" type="shared" />
+  <export function="output" type="shared" />
 </meta>
