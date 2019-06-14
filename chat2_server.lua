@@ -4,6 +4,10 @@ function clear(player)
   triggerClientEvent(player, "onChat2Clear", player)
 end
 
+function show(player, bool)
+  triggerClientEvent(player, "onChat2Show", player, bool)
+end
+
 function onChatSendMessage(message)
   local sender = client
   local nickname = getPlayerName(sender)

@@ -2,12 +2,12 @@ local chatInstance
 local chatInstanceLoading
 local chatInstanceLoaded
 
--- addEvent("__onChatShow", true)
 addEvent("onChat2Loaded")
 addEvent("onChat2Input")
 addEvent("onChat2SendMessage")
 addEvent("onChat2ReceiveMessage", true)
 addEvent("onChat2Clear", true)
+addEvent("onChat2Show", true)
 
 function clear()
   local eval = "clear()"
@@ -72,10 +72,10 @@ function onChatReceiveMessage(message)
   execute(eval)
 end
 
--- addEventHandler("__onChatShow", resourceRoot, show)
 addEventHandler("onClientResourceStart", resourceRoot, onResourceStart)
 addEventHandler("onChat2Loaded", resourceRoot, onChatLoaded)
 addEventHandler("onChat2Input", resourceRoot, onChatInput)
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
 addEventHandler("onChat2ReceiveMessage", localPlayer, onChatReceiveMessage)
 addEventHandler("onChat2Clear", localPlayer, clear)
+addEventHandler("onChat2Show", localPlayer, show)

@@ -7,4 +7,7 @@
 
   <export function="clear" type="server" />
   <export function="clear" type="client" />
+
+  <export function="show" type="server" />
+  <export function="show" type="client" />
 </meta>
