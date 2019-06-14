@@ -1,7 +1,7 @@
 addEvent("onChat2SendMessage", true)
 addEvent("onPlayerChat2")
 
-local isDefaultOutput
+local isDefaultOutput = true
 
 function clear(player)
   triggerClientEvent(player, "onChat2Clear", player)
