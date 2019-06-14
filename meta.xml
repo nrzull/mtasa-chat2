@@ -4,5 +4,7 @@
   <script src="chat2_server.lua" type="server" />
   <script src="chat2_client.lua" type="client" />
   <file src="index.html" />
-  <!-- <export function="show" type="client" /> -->
+
+  <export function="clear" type="server" />
+  <export function="clear" type="client" />
 </meta>

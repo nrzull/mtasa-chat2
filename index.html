@@ -198,6 +198,11 @@
         root.append(rootFragment);
       }
 
+      function clear() {
+        state.history = [];
+        render();
+      }
+
       function processText(text) {
         const result = [];
         const regex = /#[0-9abcdef]{6}/;

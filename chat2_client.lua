@@ -7,6 +7,12 @@ addEvent("onChat2Loaded")
 addEvent("onChat2Input")
 addEvent("onChat2SendMessage")
 addEvent("onChat2ReceiveMessage", true)
+addEvent("onChat2Clear", true)
+
+function clear()
+  local eval = "clear()"
+  execute(eval)
+end
 
 function show(bool)
   if chatInstanceLoaded ~= true then
@@ -19,6 +25,10 @@ function show(bool)
   end
 
   local eval = "show(" .. tostring(bool) .. ");"
+  execute(eval)
+end
+
+function execute(eval)
   executeBrowserJavascript(chatInstance, eval)
 end
 
@@ -59,7 +69,7 @@ end
 
 function onChatReceiveMessage(message)
   local eval = string.format("addMessage(%s)", toJSON(message))
-  executeBrowserJavascript(chatInstance, eval)
+  execute(eval)
 end
 
 -- addEventHandler("__onChatShow", resourceRoot, show)
@@ -68,3 +78,4 @@ addEventHandler("onChat2Loaded", resourceRoot, onChatLoaded)
 addEventHandler("onChat2Input", resourceRoot, onChatInput)
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
 addEventHandler("onChat2ReceiveMessage", localPlayer, onChatReceiveMessage)
+addEventHandler("onChat2Clear", localPlayer, clear)

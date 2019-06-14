@@ -1,5 +1,9 @@
 addEvent("onChat2SendMessage", true)
 
+function clear(player)
+  triggerClientEvent(player, "onChat2Clear", player)
+end
+
 function onChatSendMessage(message)
   local sender = client
   local nickname = getPlayerName(sender)
