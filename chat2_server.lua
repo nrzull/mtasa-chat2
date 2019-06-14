@@ -14,7 +14,8 @@ function onChatSendMessage(message)
   end
 
   for _, player in ipairs(getElementsByType("player")) do
-    triggerClientEvent(player, "onChat2ReceiveMessage", player, nickname, message)
+    local text = string.format("%s#ffffff: %s", nickname, message)
+    triggerClientEvent(player, "onChat2ReceiveMessage", player, text)
   end
 end
 

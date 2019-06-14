@@ -25,7 +25,7 @@
         flex-flow: column;
         justify-content: space-between;
         text-shadow: 0 0.25vh 0vh #000;
-        color: #fff;
+        color: #ffffff;
         overflow-x: hidden;
       }
 
@@ -51,13 +51,8 @@
         background-color: transparent;
       }
 
-      .chat__nickname {
-        color: #fff;
-      }
-
       .chat__message {
         word-break: break-all;
-        color: #fffcdd;
         font-size: 5vh;
         line-height: 130%;
         font-family: sans-serif;
@@ -96,17 +91,6 @@
     </div>
 
     <script>
-      const smileys = {
-        ":D": "😀",
-        xD: "😂",
-        XD: "😂",
-        "(:": "😄",
-        ":)": "😄",
-        ":P": "😜",
-        "-_-": "😒",
-        ":(": "😟"
-      };
-
       // T key
       const inputButton = 84;
       // Enter key
@@ -138,7 +122,7 @@
         input.classList.remove("hidden");
       }
 
-      function addMessage([message]) {
+      function addMessage(message) {
         if (!state.show) return;
 
         state.history.push(message);
@@ -198,36 +182,16 @@
         state.history.forEach(message => {
           const messageElement = document.createElement("div");
           messageElement.classList.add("chat__message");
+          const messageFragment = document.createDocumentFragment();
 
-          const nicknameElement = document.createElement("b");
-          const nicknameFragment = document.createDocumentFragment();
-          nicknameElement.classList.add("chat__nickname");
-
-          processText(message.nickname, false).forEach(({ part, color }) => {
+          processText(message).forEach(({ part, color }) => {
             const partElement = document.createElement("span");
             partElement.innerText = part;
             partElement.style.color = color;
-            nicknameFragment.appendChild(partElement);
+            messageFragment.appendChild(partElement);
           });
 
-          nicknameElement.appendChild(nicknameFragment);
-
-          const separatorElement = document.createTextNode(": ");
-
-          const textElement = document.createElement("span");
-          const textFragment = document.createDocumentFragment();
-          textElement.classList.add("chat__text");
-
-          processText(message.text, true).forEach(({ part, color }) => {
-            const partElement = document.createElement("span");
-            partElement.innerText = part;
-            partElement.style.color = color;
-            textFragment.appendChild(partElement);
-          });
-
-          textElement.appendChild(textFragment);
-
-          messageElement.append(nicknameElement, separatorElement, textElement);
+          messageElement.append(messageFragment);
           rootFragment.append(messageElement);
         });
 
@@ -238,20 +202,11 @@
         return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
       }
 
-      function processText(text, withSmileys = false) {
+      function processText(text) {
         const result = [];
         const regex = /#[0-9abcdef]{6}/;
         const parts = [];
         const sharpPositions = [];
-
-        if (withSmileys) {
-          Object.keys(smileys).forEach(key => {
-            text = text.replace(
-              new RegExp(this.escapeString(key), "g"),
-              smileys[key]
-            );
-          });
-        }
 
         text.split("").forEach((v, i) => {
           if (v == "#") sharpPositions.push(i);

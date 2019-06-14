@@ -56,8 +56,8 @@ function onChatSendMessage(message)
   triggerServerEvent("onChat2SendMessage", resourceRoot, message)
 end
 
-function onChatReceiveMessage(nickname, message)
-  local eval = "addMessage(" .. toJSON({nickname = nickname, text = message}) .. ")"
+function onChatReceiveMessage(message)
+  local eval = string.format("addMessage('%s')", message)
   executeBrowserJavascript(chatInstance, eval)
 end
 
