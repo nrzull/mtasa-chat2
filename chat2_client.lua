@@ -46,8 +46,10 @@ end
 
 function onChatInput(isActive)
   if isActive == "true" then
+    guiSetInputEnabled(true)
     toggleAllControls(false)
   else
+    guiSetInputEnabled(false)
     toggleAllControls(true)
   end
 end
