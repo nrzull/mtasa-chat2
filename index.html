@@ -96,6 +96,8 @@
       const inputButton = 84;
       // Enter key
       const enterButton = 13;
+      // TAB key
+      const tabButton = 9;
 
       const state = {
         show: true,
@@ -145,7 +147,13 @@
       document.addEventListener("DOMContentLoaded", handleDOMContentLoaded);
 
       function handleDOMContentLoaded() {
+        const input = document.querySelector(".chat__input");
+        input.addEventListener("keydown", preventPressTab);
         mta.triggerEvent("onChat2Loaded");
+      }
+
+      function preventPressTab(e) {
+        if (e.keyCode == tabButton) e.preventDefault();
       }
 
       function handlePressInputButton(ev) {
