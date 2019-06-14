@@ -122,7 +122,7 @@
         input.classList.remove("hidden");
       }
 
-      function addMessage(message) {
+      function addMessage([message]) {
         if (!state.show) return;
 
         state.history.push(message);
@@ -196,10 +196,6 @@
         });
 
         root.append(rootFragment);
-      }
-
-      function escapeString(str) {
-        return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
       }
 
       function processText(text) {

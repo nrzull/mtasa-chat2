@@ -30,6 +30,7 @@ end
 
 function load()
   loadBrowserURL(chatInstance, "http://mta/local/index.html")
+  -- TODO remove it
   -- setDevelopmentMode(true, true)
   -- toggleBrowserDevTools(chatInstance, true)
 end
@@ -57,7 +58,7 @@ function onChatSendMessage(message)
 end
 
 function onChatReceiveMessage(message)
-  local eval = string.format("addMessage('%s')", message)
+  local eval = string.format("addMessage(%s)", toJSON(message))
   executeBrowserJavascript(chatInstance, eval)
 end
 
