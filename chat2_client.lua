@@ -9,6 +9,28 @@ addEvent("onChat2Output", true)
 addEvent("onChat2Clear", true)
 addEvent("onChat2Show", true)
 
+function execute(eval)
+  executeBrowserJavascript(chatInstance, eval)
+end
+
+function create()
+  chatInstance = guiGetBrowser(guiCreateBrowser(0.01, 0.01, 0.25, 0.4, true, true, true))
+  chatInstanceLoading = true
+  addEventHandler("onClientBrowserCreated", chatInstance, load)
+end
+
+function load()
+  loadBrowserURL(chatInstance, "http://mta/local/index.html")
+  -- TODO remove it
+  -- setDevelopmentMode(true, true)
+  -- toggleBrowserDevTools(chatInstance, true)
+end
+
+function output(message)
+  local eval = string.format("addMessage(%s)", toJSON(message))
+  execute(eval)
+end
+
 function clear()
   local eval = "clear()"
   execute(eval)
@@ -26,23 +48,6 @@ function show(bool)
 
   local eval = "show(" .. tostring(bool) .. ");"
   execute(eval)
-end
-
-function execute(eval)
-  executeBrowserJavascript(chatInstance, eval)
-end
-
-function create()
-  chatInstance = guiGetBrowser(guiCreateBrowser(0.01, 0.01, 0.25, 0.4, true, true, true))
-  chatInstanceLoading = true
-  addEventHandler("onClientBrowserCreated", chatInstance, load)
-end
-
-function load()
-  loadBrowserURL(chatInstance, "http://mta/local/index.html")
-  -- TODO remove it
-  -- setDevelopmentMode(true, true)
-  -- toggleBrowserDevTools(chatInstance, true)
 end
 
 function onResourceStart()
@@ -65,11 +70,6 @@ end
 
 function onChatSendMessage(message)
   triggerServerEvent("onChat2SendMessage", resourceRoot, message)
-end
-
-function output(message)
-  local eval = string.format("addMessage(%s)", toJSON(message))
-  execute(eval)
 end
 
 addEventHandler("onClientResourceStart", resourceRoot, onResourceStart)
