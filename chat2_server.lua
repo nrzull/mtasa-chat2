@@ -1,4 +1,4 @@
-addEvent("__onChatSendMessage", true)
+addEvent("onChat2SendMessage", true)
 
 function onChatSendMessage(message)
   local sender = client
@@ -14,7 +14,7 @@ function onChatSendMessage(message)
   end
 
   for _, player in ipairs(getElementsByType("player")) do
-    triggerClientEvent(player, "__onChatReceiveMessage", player, nickname, message)
+    triggerClientEvent(player, "onChat2ReceiveMessage", player, nickname, message)
   end
 end
 
@@ -38,4 +38,4 @@ function handleCommand(client, input)
   executeCommandHandler(cmd, client, unpack(args))
 end
 
-addEventHandler("__onChatSendMessage", resourceRoot, onChatSendMessage)
+addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)

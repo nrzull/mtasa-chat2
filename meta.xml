@@ -3,9 +3,6 @@
 
   <script src="chat2_server.lua" type="server" />
   <script src="chat2_client.lua" type="client" />
-
   <file src="index.html" />
-  <file src="roboto-medium.ttf" />
-
   <!-- <export function="show" type="client" /> -->
 </meta>

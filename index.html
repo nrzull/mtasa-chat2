@@ -5,23 +5,28 @@
   </head>
   <body>
     <style>
-      @font-face {
-        font-family: Roboto;
-        src: url("http://mta/local/roboto-medium.ttf") format("truetype");
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
       }
 
       .chat {
         position: absolute;
-        left: 2vh;
-        top: 2vh;
-        width: 50vh;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
         display: flex;
         flex-flow: column;
         justify-content: space-between;
-        font-family: Roboto;
-        font-weight: 600;
-        text-shadow: 0 0.1vh 0.1vh #000;
+        text-shadow: 0 0.25vh 0vh #000;
         color: #fff;
+        overflow-x: hidden;
       }
 
       .chat.hidden {
@@ -30,7 +35,7 @@
 
       .chat__messages {
         position: relative;
-        height: 30vh;
+        max-height: 80%;
         overflow-y: scroll;
       }
 
@@ -53,8 +58,10 @@
       .chat__message {
         word-break: break-all;
         color: #fffcdd;
-        margin-bottom: 0.5vh;
-        font-size: 2vh;
+        font-size: 5vh;
+        line-height: 130%;
+        font-family: sans-serif;
+        font-weight: 700;
       }
 
       .chat__message:last-child {
@@ -62,15 +69,16 @@
       }
 
       .chat__input {
-        padding: 1vh;
+        padding: 2vh;
         margin-top: 2vh;
         width: 100%;
         background-color: rgba(0, 0, 0, 0.25);
         border: 1px solid rgba(0, 0, 0, 0.25);
         color: #fff;
-        font-size: 1.7vh;
+        font-size: 4vh;
         text-shadow: 0 0.1vh 0.2vh rgba(0, 0, 0, 0.5);
-        font-family: Roboto;
+        font-family: sans-serif;
+        font-weight: 700;
       }
 
       .chat__input.hidden {
@@ -152,7 +160,7 @@
       document.addEventListener("DOMContentLoaded", handleDOMContentLoaded);
 
       function handleDOMContentLoaded() {
-        mta.triggerEvent("__onChatLoaded");
+        mta.triggerEvent("onChat2Loaded");
       }
 
       function handlePressInputButton(ev) {
@@ -163,7 +171,7 @@
         showInput(true);
         const input = document.querySelector(".chat__input");
         setTimeout(() => {
-          mta.triggerEvent("__onChatInput", "true");
+          mta.triggerEvent("onChat2Input", "true");
           input.focus();
         }, 0);
       }
@@ -178,8 +186,8 @@
         input.value = "";
 
         showInput(false);
-        mta.triggerEvent("__onChatSendMessage", inputMessage);
-        setTimeout(mta.triggerEvent, 100, "__onChatInput", "false");
+        mta.triggerEvent("onChat2SendMessage", inputMessage);
+        setTimeout(mta.triggerEvent, 100, "onChat2Input", "false");
       }
 
       function render() {

@@ -3,10 +3,10 @@ local chatInstanceLoading
 local chatInstanceLoaded
 
 -- addEvent("__onChatShow", true)
-addEvent("__onChatLoaded")
-addEvent("__onChatInput")
-addEvent("__onChatSendMessage")
-addEvent("__onChatReceiveMessage", true)
+addEvent("onChat2Loaded")
+addEvent("onChat2Input")
+addEvent("onChat2SendMessage")
+addEvent("onChat2ReceiveMessage", true)
 
 function show(bool)
   if chatInstanceLoaded ~= true then
@@ -23,7 +23,7 @@ function show(bool)
 end
 
 function create()
-  chatInstance = guiGetBrowser(guiCreateBrowser(0, 0, 1, 1, true, true, true))
+  chatInstance = guiGetBrowser(guiCreateBrowser(0.01, 0.01, 0.25, 0.4, true, true, true))
   chatInstanceLoading = true
   addEventHandler("onClientBrowserCreated", chatInstance, load)
 end
@@ -53,7 +53,7 @@ function onChatInput(isActive)
 end
 
 function onChatSendMessage(message)
-  triggerServerEvent("__onChatSendMessage", resourceRoot, message)
+  triggerServerEvent("onChat2SendMessage", resourceRoot, message)
 end
 
 function onChatReceiveMessage(nickname, message)
@@ -63,7 +63,7 @@ end
 
 -- addEventHandler("__onChatShow", resourceRoot, show)
 addEventHandler("onClientResourceStart", resourceRoot, onResourceStart)
-addEventHandler("__onChatLoaded", resourceRoot, onChatLoaded)
-addEventHandler("__onChatInput", resourceRoot, onChatInput)
-addEventHandler("__onChatSendMessage", resourceRoot, onChatSendMessage)
-addEventHandler("__onChatReceiveMessage", localPlayer, onChatReceiveMessage)
+addEventHandler("onChat2Loaded", resourceRoot, onChatLoaded)
+addEventHandler("onChat2Input", resourceRoot, onChatInput)
+addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
+addEventHandler("onChat2ReceiveMessage", localPlayer, onChatReceiveMessage)
