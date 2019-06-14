@@ -27,6 +27,10 @@ function load()
 end
 
 function output(message)
+  if not chatInstanceLoaded then
+    return setTimer(output, 250, 1, message)
+  end
+
   local eval = string.format("addMessage(%s)", toJSON(message))
   execute(eval)
 end
