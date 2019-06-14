@@ -46,6 +46,7 @@ function onChatSendMessage(message)
   for _, player in ipairs(getElementsByType("player")) do
     local text = string.format("%s#ffffff: %s", nickname, message)
     output(player, text)
+    outputServerLog(text)
   end
 end
 
