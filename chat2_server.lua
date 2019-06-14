@@ -2,6 +2,8 @@ addEvent("onChat2SendMessage", true)
 addEvent("onPlayerChat2")
 
 local isDefaultOutput = true
+local minLength = 1
+local maxLength = 96
 
 function clear(player)
   triggerClientEvent(player, "onChat2Clear", player)
@@ -27,11 +29,11 @@ function onChatSendMessage(message)
   local sender = client
   local nickname = getPlayerName(sender)
 
-  if type(message) ~= "string" or string.len(message) == 0 then
+  if type(message) ~= "string" or utf8.len(message) < minLength or utf8.len(message) > maxLength then
     return
   end
 
-  if string.sub(message, 0, 1) == "/" then
+  if utf8.sub(message, 0, 1) == "/" then
     handleCommand(sender, message)
     return
   end
@@ -49,7 +51,7 @@ end
 
 function handleCommand(client, input)
   local splittedInput = split(input, " ")
-  local cmd = string.sub(splittedInput[1], 2, string.len(splittedInput[1]))
+  local cmd = utf8.sub(splittedInput[1], 2, utf8.len(splittedInput[1]))
   local args = {}
 
   for i, arg in ipairs(splittedInput) do
@@ -60,7 +62,7 @@ function handleCommand(client, input)
 
   for i, part in ipairs(splittedInput) do
     if i == 1 then
-      cmd = string.sub(part, i + 1, string.len(part))
+      cmd = utf8.sub(part, i + 1, utf8.len(part))
     end
   end
 
