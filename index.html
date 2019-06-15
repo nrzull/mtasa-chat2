@@ -102,99 +102,156 @@
     </div>
 
     <script>
-      // T key
-      const inputButton = 84;
-      // Enter key
-      const enterButton = 13;
-      // TAB key
-      const tabButton = 9;
+      const keyCodes = {
+        t: 84,
+        enter: 13,
+        tab: 9,
+        pageUp: 33,
+        pageDown: 34
+      };
 
       const state = {
         show: true,
         showInput: false,
         inputMessage: "",
-        history: []
+        history: [],
+        scroll: false,
+        canScrollToBottom: true,
+        lastRegisteredDelayCallback: null
       };
 
-      function show(bool) {
-        const chat = document.querySelector(".chat");
-        state.show = bool;
+      let elements;
 
-        if (!bool) return chat.classList.add("hidden");
-        chat.classList.remove("hidden");
+      function show(bool) {
+        state.show = bool;
+        if (!bool) return elements.chat.classList.add("hidden");
+        elements.chat.classList.remove("hidden");
 
         render();
         scrollToBottom();
       }
 
       function showInput(bool) {
-        const input = document.querySelector(".chat__input");
         state.showInput = bool;
-
-        if (!bool) return input.classList.add("hidden");
-        input.classList.remove("hidden");
+        if (!bool) return elements.input.classList.add("hidden");
+        elements.input.classList.remove("hidden");
       }
 
       function addMessage([message]) {
         if (!state.show) return;
-
         state.history.push(message);
+
         render();
         scrollToBottom();
       }
 
-      function scrollToBottom() {
-        const target = document.querySelector(".chat__messages");
+      function scrollToBottom(force = false) {
+        if (force) {
+          state.canScrollToBottom = true;
+          state.lastRegisteredDelayCallback = null;
+        }
 
-        target.scrollTo({
-          top: target.scrollHeight,
+        if (!state.canScrollToBottom) return;
+
+        elements.chatMessages.scrollTo({
+          top: elements.chatMessages.scrollHeight,
           behavior: "smooth"
         });
       }
 
-      document.addEventListener("keydown", handlePressInputButton);
-      document.addEventListener("keydown", handlePressEnterButton);
-      document.addEventListener("DOMContentLoaded", handleDOMContentLoaded);
-
       function handleDOMContentLoaded() {
-        const input = document.querySelector(".chat__input");
-        input.addEventListener("keydown", preventPressTab);
+        elements = {
+          chat: document.querySelector(".chat"),
+          input: document.querySelector(".chat__input"),
+          chatMessages: document.querySelector(".chat__messages"),
+          chatMessagesContainer: document.querySelector(
+            ".chat__messages-container"
+          )
+        };
+
+        elements.input.addEventListener("keydown", preventPressTab);
+        document.addEventListener("keydown", handleKeydownScrollButton);
+        document.addEventListener("keyup", handleKeyupScrollButton);
         mta.triggerEvent("onChat2Loaded");
       }
 
       function preventPressTab(e) {
-        if (e.keyCode == tabButton) e.preventDefault();
+        if (e.keyCode == keyCodes.tab) e.preventDefault();
       }
 
       function handlePressInputButton(ev) {
         if (!state.show) return;
-        if (ev.keyCode !== inputButton) return;
+        if (ev.keyCode !== keyCodes.t) return;
         if (state.showInput) return;
 
         showInput(true);
-        const input = document.querySelector(".chat__input");
         setTimeout(() => {
           mta.triggerEvent("onChat2Input", "true");
-          input.focus();
+          elements.input.focus();
         }, 0);
       }
 
       function handlePressEnterButton(ev) {
         if (!state.show) return;
-        if (ev.keyCode !== enterButton) return;
+        if (ev.keyCode !== keyCodes.enter) return;
         if (!state.showInput) return;
 
-        const input = document.querySelector(".chat__input");
-        const inputMessage = input.value;
-        input.value = "";
+        const inputMessage = elements.input.value;
+        elements.input.value = "";
 
         showInput(false);
         mta.triggerEvent("onChat2SendMessage", inputMessage);
         setTimeout(mta.triggerEvent, 100, "onChat2Input", "false");
+        scrollToBottom(true);
+      }
+
+      function handleKeydownScrollButton(ev) {
+        const { keyCode } = ev;
+        const { pageUp, pageDown } = keyCodes;
+
+        if (!state.show) return;
+        if (keyCode !== pageUp && keyCode !== pageDown) return;
+        if (state.scroll) return;
+
+        if (keyCode == pageUp) state.scroll = pageUp;
+        else state.scroll = pageDown;
+
+        scroll();
+      }
+
+      function handleKeyupScrollButton(ev) {
+        const { keyCode } = ev;
+        const { pageUp, pageDown } = keyCodes;
+
+        if (!state.show) return;
+        if (keyCode !== pageUp && keyCode !== pageDown) return;
+        if (!state.scroll) return;
+
+        state.scroll = false;
+        state.canScrollToBottom = false;
+
+        let registeredCallback = function() {
+          if (!state.lastRegisteredDelayCallback) return;
+
+          if (
+            registeredCallback.uniqueId !==
+            state.lastRegisteredDelayCallback.uniqueId
+          ) {
+            return;
+          }
+
+          state.canScrollToBottom = true;
+          scrollToBottom();
+          state.lastRegisteredDelayCallback = false;
+        };
+        registeredCallback.uniqueId = Date.now();
+
+        state.lastRegisteredDelayCallback = registeredCallback;
+        setTimeout(registeredCallback, 5000);
       }
 
       function render() {
-        const root = document.querySelector(".chat__messages-container");
+        const root = elements.chatMessagesContainer;
         const rootFragment = document.createDocumentFragment();
         root.innerHTML = "";
 
@@ -215,6 +272,22 @@
         });
 
         root.append(rootFragment);
+      }
+
+      function scroll() {
+        if (!state.scroll) return;
+        const value = state.scroll == keyCodes.pageUp ? -5 : 5;
+        elements.chatMessages.scrollBy({ top: value });
+
+        // if (state.scroll == keyCodes.pageDown) {
+        //   if (elements.chatMessages.scrollHeight - elements.chatMessages.scrollTop <= 100) {
+
+        //   } else {
+        //     setTimeout(scroll, 25);
+        //   }
+        // }
+
+        setTimeout(scroll, 25);
       }
 
       function clear() {
@@ -263,6 +336,10 @@
 
         return result;
       }
+
+      document.addEventListener("DOMContentLoaded", handleDOMContentLoaded);
+      document.addEventListener("keydown", handlePressInputButton);
+      document.addEventListener("keydown", handlePressEnterButton);
     </script>
   </body>
 </html>
