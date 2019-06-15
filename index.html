@@ -141,6 +141,8 @@
         if (!state.show) return;
         state.history.push(message);
 
+        if (state.history.length > 50) state.history.shift();
+
         render();
         scrollToBottom();
       }
