@@ -21,9 +21,6 @@ end
 
 function load()
   loadBrowserURL(chatInstance, "http://mta/local/index.html")
-  -- TODO remove it
-  -- setDevelopmentMode(true, true)
-  -- toggleBrowserDevTools(chatInstance, true)
 end
 
 function output(message)
