@@ -31,7 +31,7 @@
       }
 
       .chat.hidden {
-        display: none;
+        visibility: hidden;
       }
 
       .chat__messages-container {
@@ -114,7 +114,6 @@
         show: true,
         showInput: false,
         inputMessage: "",
-        history: [],
         scroll: false,
         canScrollToBottom: true,
         lastRegisteredDelayCallback: null
@@ -127,7 +126,6 @@
         if (!bool) return elements.chat.classList.add("hidden");
         elements.chat.classList.remove("hidden");
 
-        render();
         scrollToBottom();
       }
 
@@ -140,10 +138,7 @@
       function addMessage([message]) {
         if (!state.show) return;
 
-        if (state.history.length > 50) state.history.shift();
-        state.history.push(message);
-
-        render();
+        render(message);
         scrollToBottom();
       }
 
@@ -265,28 +260,20 @@
         setTimeout(registeredCallback, 5000);
       }
 
-      function render() {
-        const root = elements.chatMessagesContainer;
-        const rootFragment = document.createDocumentFragment();
-        root.innerHTML = "";
+      function render(message) {
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("chat__message");
+        const messageFragment = document.createDocumentFragment();
 
-        state.history.forEach(message => {
-          const messageElement = document.createElement("div");
-          messageElement.classList.add("chat__message");
-          const messageFragment = document.createDocumentFragment();
-
-          processText(message).forEach(({ part, color }) => {
-            const partElement = document.createElement("span");
-            partElement.innerText = part;
-            partElement.style.color = color;
-            messageFragment.appendChild(partElement);
-          });
-
-          messageElement.append(messageFragment);
-          rootFragment.append(messageElement);
+        processText(message).forEach(({ part, color }) => {
+          const partElement = document.createElement("span");
+          partElement.innerText = part;
+          partElement.style.color = color;
+          messageFragment.appendChild(partElement);
         });
 
-        root.append(rootFragment);
+        messageElement.append(messageFragment);
+        elements.chatMessagesContainer.append(messageElement);
       }
 
       function scroll() {
@@ -297,8 +284,7 @@
       }
 
       function clear() {
-        state.history = [];
-        render();
+        elements.chatMessagesContainer.innerHTML = "";
       }
 
       function processText(text) {
