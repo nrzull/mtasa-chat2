@@ -162,7 +162,7 @@
         messageElement.classList.add("chat__message");
         const messageFragment = document.createDocumentFragment();
 
-        processText(message).forEach(({ part, color }) => {
+        processTextWithHexCode(message).forEach(({ part, color }) => {
           const partElement = document.createElement("span");
           partElement.innerText = part;
           partElement.style.color = color;
@@ -184,7 +184,7 @@
         elements.chatMessagesContainer.innerHTML = "";
       }
 
-      function processText(text) {
+      function processTextWithHexCode(text) {
         const result = [];
         const regex = /#[0-9abcdef]{6}/;
         const parts = [];
