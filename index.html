@@ -139,9 +139,9 @@
 
       function addMessage([message]) {
         if (!state.show) return;
-        state.history.push(message);
 
         if (state.history.length > 50) state.history.shift();
+        state.history.push(message);
 
         render();
         scrollToBottom();
@@ -230,6 +230,19 @@
         if (!state.scroll) return;
 
         state.scroll = false;
+
+        const isEndOfScroll =
+          elements.chatMessages.scrollHeight -
+            elements.chatMessages.scrollTop -
+            parseInt(getComputedStyle(elements.chatMessages).height) ==
+          1;
+
+        if (isEndOfScroll) {
+          state.canScrollToBottom = true;
+          state.lastRegisteredDelayCallback = null;
+          return;
+        }
+
         state.canScrollToBottom = false;
 
         let registeredCallback = function() {
@@ -244,7 +257,7 @@
 
           state.canScrollToBottom = true;
           scrollToBottom();
-          state.lastRegisteredDelayCallback = false;
+          state.lastRegisteredDelayCallback = null;
         };
         registeredCallback.uniqueId = Date.now();
 
@@ -280,15 +293,6 @@
         if (!state.scroll) return;
         const value = state.scroll == keyCodes.pageUp ? -5 : 5;
         elements.chatMessages.scrollBy({ top: value });
-
-        // if (state.scroll == keyCodes.pageDown) {
-        //   if (elements.chatMessages.scrollHeight - elements.chatMessages.scrollTop <= 100) {
-
-        //   } else {
-        //     setTimeout(scroll, 25);
-        //   }
-        // }
-
         setTimeout(scroll, 25);
       }
 
