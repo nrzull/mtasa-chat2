@@ -5,14 +5,14 @@ This chat is using CEF and it tries to become full replacement for default chat
 ## Pros
 
 - Emojis (😈)
-- Adaptive (you don't need to put-on glasses for your 1920x1080 screen to see what others write)
+- Adaptiveness (you don't need to put-on glasses for your 1920x1080 screen to see what others write)
 - Copy/paste from/to input (no more console -> say someLongMessageOrUrl)
 - Customizable (now you can unify a chat for all of your players)
 
 ## Cons
 
 - For execution of custom commands resource needs an access right for [ExecuteCommandHandler](https://wiki.multitheftauto.com/wiki/ExecuteCommandHandler) in ACL
-- It can't execute built-in commands like `/nick`, `/login`, etc "due to security reasons." (c) mta wiki
+- It can't execute built-in commands like `/nick`, `/login`, etc "due to security reasons." (c) mta wiki. You need to write your own custom handlers for this commands
 - It can't be used until resource starts so you can't write useful messages to player in `onPlayerConnect` event handler
 
 ## API
