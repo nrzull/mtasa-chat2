@@ -250,7 +250,7 @@
         const isEndOfScroll =
           elements.chatMessages.scrollHeight -
             elements.chatMessages.scrollTop -
-            parseInt(getComputedStyle(elements.chatMessages).height) ==
+            parseInt(getComputedStyle(elements.chatMessages).height) <=
           1;
 
         if (isEndOfScroll) {
