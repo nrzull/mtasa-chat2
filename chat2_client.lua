@@ -27,9 +27,7 @@ function output(message)
   if not chatInstanceLoaded then
     return setTimer(output, 250, 1, message)
   end
-
-  local eval = string.format("addMessage(%s)", toJSON(message))
-  execute(eval)
+  execute(string.format("addMessage(%s)", toJSON(message)))
 end
 
 function clear()
@@ -38,18 +36,12 @@ function clear()
 end
 
 function show(bool)
-  if chatInstanceLoaded ~= true then
-    if chatInstanceLoading ~= true then
-      create()
-      setTimer(show, 300, 1, bool)
-    else
-      setTimer(show, 300, 1, bool)
-    end
-  end
-
-  local eval = "show(" .. tostring(bool) .. ");"
-  execute(eval)
-  setElementData(localPlayer, "chat2IsVisible", bool)
+    if chatInstanceLoaded then return end
+    if not chatInstanceLoading then create() end
+    setTimer(show, 300, 1, bool)
+    local eval = "show(" .. tostring(bool) .. ");"
+    execute(eval)
+    setElementData(localPlayer, "chat2IsVisible", bool)
 end
 
 function isVisible()

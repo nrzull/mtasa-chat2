@@ -5,6 +5,13 @@ local isDefaultOutput = true
 local minLength = 1
 local maxLength = 96
 
+--Reduce event calls for onPlayerChat
+local rootPlayers = createElement("rootPlayers"))
+setElementParent(rootPlayers, root)
+local function registerPlayer(p) setElementParent(p or source, rootPlayers) end
+for _, p in ipairs(getElementsByType("player")) do registerPlayer(p) end
+addEventHandler("onPlayerJoin", root, function() registerPlayer() end)
+
 function clear(player)
   triggerClientEvent(player, "onChat2Clear", player)
 end
@@ -26,12 +33,11 @@ function useDefaultOutput(bool)
 end
 
 function onChatSendMessage(message)
-  local sender = client
-  local nickname = getPlayerName(sender)
-
   if type(message) ~= "string" or utf8.len(message) < minLength or utf8.len(message) > maxLength then
     return
   end
+
+  local sender = client
 
   if utf8.sub(message, 0, 1) == "/" then
     handleCommand(sender, message)
@@ -39,35 +45,24 @@ function onChatSendMessage(message)
   end
 
   if not isDefaultOutput then
-    triggerEvent("onPlayerChat2", root, sender, message)
+    triggerEvent("onPlayerChat2", rootPlayers, sender, message)
     return
   end
 
+  local nickname = getPlayerName(sender)
+
   for _, player in ipairs(getElementsByType("player")) do
     local text = string.format("%s#ffffff: %s", nickname, message)
-    output(player, text)
-    outputServerLog(text)
   end
+  output(player, text)
+  outputServerLog(text)
 end
 
 function handleCommand(client, input)
   local splittedInput = split(input, " ")
-  local cmd = utf8.sub(splittedInput[1], 2, utf8.len(splittedInput[1]))
-  local args = {}
-
-  for i, arg in ipairs(splittedInput) do
-    if (i ~= 1) then
-      args[i - 1] = arg
-    end
-  end
-
-  for i, part in ipairs(splittedInput) do
-    if i == 1 then
-      cmd = utf8.sub(part, i + 1, utf8.len(part))
-    end
-  end
-
-  executeCommandHandler(cmd, client, unpack(args))
+  local slashCmd = table.remove(splittedInput, 1)
+  local cmd = utf8.sub(slashCmd, 2, utf8.len(slashCmd))
+  executeCommandHandler(cmd, client, unpack(splittedInput))
 end
 
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
