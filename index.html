@@ -162,9 +162,9 @@
         messageElement.classList.add("chat__message");
         const messageFragment = document.createDocumentFragment();
 
-        processTextWithHexCode(message).forEach(({ part, color }) => {
+        processTextWithHexCode(message).forEach(({ text, color }) => {
           const partElement = document.createElement("span");
-          partElement.innerText = part;
+          partElement.innerText = text;
           partElement.style.color = color;
           messageFragment.appendChild(partElement);
         });
@@ -185,45 +185,16 @@
       }
 
       function processTextWithHexCode(text) {
-        const result = [];
-        const regex = /#[0-9abcdefABCDEF]{6}/;
-        const parts = [];
-        const sharpPositions = [];
-
-        text.split("").forEach((v, i) => {
-          if (v == "#") sharpPositions.push(i);
-        });
-
-        if (!sharpPositions.length) {
-          result.push({ part: text, color: null });
-          return result;
+        const results = [];
+        const regex = /#[0-9A-F]{6}/gi;
+        const hexCodes = text.match(regex);
+        const parts = text.split(regex);
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i];
+          if (part === "") continue;
+          results.push({ text: part, color: i === 0 ? null : hexCodes[i - 1] });
         }
-
-        if (sharpPositions[0] != 0) {
-          result.push({ part: text.slice(0, sharpPositions[0]), color: null });
-        }
-
-        sharpPositions.forEach((position, i, arr) => {
-          const nextPosition =
-            typeof arr[i + 1] == "number" ? arr[i + 1] : undefined;
-          parts.push(text.slice(position, nextPosition));
-        });
-
-        parts.forEach(part => {
-          if (regex.test(part)) {
-            result.push({
-              part: part.replace(regex, ""),
-              color: part.match(regex)[0]
-            });
-          } else {
-            result.push({
-              part,
-              color: null
-            });
-          }
-        });
-
-        return result;
+        return results;
       }
 
       function onKeydownInputButton(ev) {
@@ -233,7 +204,7 @@
 
         showInput(true);
         setTimeout(() => {
-          mta.triggerEvent("onChat2Input", "true");
+          mta.triggerEvent("onChat2Input", "1");
           elements.input.focus();
         }, 0);
       }
@@ -248,7 +219,7 @@
 
         showInput(false);
         mta.triggerEvent("onChat2SendMessage", inputMessage);
-        setTimeout(mta.triggerEvent, 100, "onChat2Input", "false");
+        setTimeout(mta.triggerEvent, 100, "onChat2Input", "0");
         scrollToBottom(true);
       }
 

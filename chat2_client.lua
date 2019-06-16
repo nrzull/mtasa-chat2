@@ -67,7 +67,7 @@ function onChatLoaded()
 end
 
 function onChatInput(isActive)
-  if isActive == "true" then
+  if isActive == "1" then
     guiSetInputEnabled(true)
   else
     guiSetInputEnabled(false)
