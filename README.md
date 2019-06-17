@@ -79,13 +79,13 @@ addEventHandler("onPlayerJoin", root, function()
 end)
 
 -- listen for say/teamsay commands from console
--- may be created if useDefaultOutput was set to 'false'
+-- may be created if useCustomEventHandlers was set to 'true'
 addEventHandler("onPlayerChat", root, function(message, messageType)
   -- some logic
 end)
 
 -- listen for direct output from chat
--- may be created if useDefaultOutput was set to 'false'
+-- may be created if useCustomEventHandlers was set to 'true'
 addEventHandler("onPlayerChat2", root, function(sender, message, messageType)
  if message == "ping" then
    exports.chat2:output(sender, "pong")
