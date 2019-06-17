@@ -51,7 +51,11 @@ function onChatSendMessage(message)
     return
   end
 
-  local nickname = getPlayerName(client)
+  defaultOutput(client, message)
+end
+
+function defaultOutput(sender, message)
+  local nickname = getPlayerName(sender)
   local text = string.format("%s#ffffff: %s", nickname, message)
 
   for _, player in ipairs(getElementsByType("player")) do
@@ -72,5 +76,10 @@ function onPlayerJoin()
   registerPlayer(source)
 end
 
+function onPlayerChat(message)
+  defaultOutput(source, message)
+end
+
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
 addEventHandler("onPlayerJoin", root, onPlayerJoin)
+addEventHandler("onPlayerChat", root, onPlayerChat)
