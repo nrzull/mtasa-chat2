@@ -5,6 +5,17 @@ local isDefaultOutput = true
 local minLength = 1
 local maxLength = 96
 
+local rootPlayers = createElement("rootPlayers")
+setElementParent(rootPlayers, root)
+
+function registerPlayer(p)
+  setElementParent(p or source, rootPlayers)
+end
+
+for _, p in ipairs(getElementsByType("player")) do
+  registerPlayer(p)
+end
+
 function clear(player)
   triggerClientEvent(player, "onChat2Clear", player)
 end
@@ -26,48 +37,40 @@ function useDefaultOutput(bool)
 end
 
 function onChatSendMessage(message)
-  local sender = client
-  local nickname = getPlayerName(sender)
-
   if type(message) ~= "string" or utf8.len(message) < minLength or utf8.len(message) > maxLength then
     return
   end
 
   if utf8.sub(message, 0, 1) == "/" then
-    handleCommand(sender, message)
+    handleCommand(client, message)
     return
   end
 
   if not isDefaultOutput then
-    triggerEvent("onPlayerChat2", root, sender, message)
+    triggerEvent("onPlayerChat2", rootPlayers, client, message)
     return
   end
 
+  local nickname = getPlayerName(client)
+  local text = string.format("%s#ffffff: %s", nickname, message)
+
   for _, player in ipairs(getElementsByType("player")) do
-    local text = string.format("%s#ffffff: %s", nickname, message)
     output(player, text)
-    outputServerLog(text)
   end
+
+  outputServerLog(text)
 end
 
 function handleCommand(client, input)
   local splittedInput = split(input, " ")
-  local cmd = utf8.sub(splittedInput[1], 2, utf8.len(splittedInput[1]))
-  local args = {}
+  local slashCmd = table.remove(splittedInput, 1)
+  local cmd = utf8.sub(slashCmd, 2, utf8.len(slashCmd))
+  executeCommandHandler(cmd, client, unpack(splittedInput))
+end
 
-  for i, arg in ipairs(splittedInput) do
-    if (i ~= 1) then
-      args[i - 1] = arg
-    end
-  end
-
-  for i, part in ipairs(splittedInput) do
-    if i == 1 then
-      cmd = utf8.sub(part, i + 1, utf8.len(part))
-    end
-  end
-
-  executeCommandHandler(cmd, client, unpack(args))
+function onPlayerJoin()
+  registerPlayer(source)
 end
 
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
+addEventHandler("onPlayerJoin", root, onPlayerJoin)

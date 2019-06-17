@@ -61,6 +61,11 @@ function onResourceStart()
   show(true)
 end
 
+function onResourceStop()
+  show(false)
+  showChat(true)
+end
+
 function onChatLoaded()
   chatInstanceLoaded = true
   focusBrowser(chatInstance)
@@ -79,6 +84,7 @@ function onChatSendMessage(message)
 end
 
 addEventHandler("onClientResourceStart", resourceRoot, onResourceStart)
+addEventHandler("onClientResourceStop", resourceRoot, onResourceStop)
 addEventHandler("onChat2Loaded", resourceRoot, onChatLoaded)
 addEventHandler("onChat2Input", resourceRoot, onChatInput)
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
