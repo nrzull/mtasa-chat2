@@ -69,9 +69,33 @@
         margin-bottom: 0;
       }
 
+      .chat__input-block {
+        position: relative;
+      }
+
+      .chat__input-block.hidden {
+        display: none;
+      }
+
+      .chat__input-label {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        padding: 1vh 2vh;
+        margin-left: 2vh;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        border-radius: 1vh;
+        text-transform: uppercase;
+        font-size: 3vh;
+        font-family: sans-serif;
+        font-weight: 700;
+        text-align: center;
+      }
+
       .chat__input {
         padding: 2vh;
-        margin-top: 2vh;
         width: 100%;
         background-color: rgba(0, 0, 0, 0.25);
         border: 1px solid rgba(0, 0, 0, 0.25);
@@ -80,10 +104,15 @@
         text-shadow: 0 0.1vh 0.2vh rgba(0, 0, 0, 0.5);
         font-family: sans-serif;
         font-weight: 700;
+        border-radius: 1vh;
       }
 
-      .chat__input.hidden {
-        display: none;
+      .chat__input.say {
+        padding-left: 15vh;
+      }
+
+      .chat__input.teamsay {
+        padding-left: 24vh;
       }
 
       .chat__input:focus {
@@ -95,12 +124,17 @@
       <div class="chat__messages">
         <div class="chat__messages-container"></div>
       </div>
-      <input maxlength="96" type="text" class="chat__input hidden" />
+
+      <div class="chat__input-block hidden">
+        <input maxlength="96" type="text" class="chat__input" />
+        <div class="chat__input-label">say</div>
+      </div>
     </div>
 
     <script>
       const keyCodes = {
         t: 84,
+        y: 89,
         enter: 13,
         tab: 9,
         pageUp: 33,
@@ -116,6 +150,9 @@
         lastRegisteredDelayCallback: null
       };
 
+      const say = "say";
+      const teamsay = "teamsay";
+
       const hexRegex = /#[0-9A-F]{6}/gi;
 
       let elements;
@@ -128,10 +165,28 @@
         scrollToBottom();
       }
 
-      function showInput(bool) {
-        state.showInput = bool;
-        if (!bool) return elements.input.classList.add("hidden");
-        elements.input.classList.remove("hidden");
+      function showInput(isShow, keyCode) {
+        const key =
+          keyCode == keyCodes.t ? "t" : keyCode == keyCodes.y ? "y" : null;
+
+        state.showInput = isShow;
+
+        if (isShow) elements.inputBlock.classList.remove("hidden");
+        else elements.inputBlock.classList.add("hidden");
+
+        if (isShow) {
+          if (key == "t") {
+            elements.inputLabel.innerText = say;
+            elements.input.classList.add("say");
+            elements.input.classList.remove("teamsay");
+          }
+
+          if (key == "y") {
+            elements.inputLabel.innerText = teamsay;
+            elements.input.classList.add("teamsay");
+            elements.input.classList.remove("say");
+          }
+        }
       }
 
       function addMessage([message]) {
@@ -224,10 +279,10 @@
 
       function onKeydownInputButton(ev) {
         if (!state.show) return;
-        if (ev.keyCode !== keyCodes.t) return;
+        if (ev.keyCode !== keyCodes.t && ev.keyCode !== keyCodes.y) return;
         if (state.showInput) return;
 
-        showInput(true);
+        showInput(true, ev.keyCode);
         setTimeout(() => {
           mta.triggerEvent("onChat2Input", "1");
           elements.input.focus();
@@ -240,10 +295,16 @@
         if (!state.showInput) return;
 
         const inputMessage = elements.input.value;
+
+        const inputType =
+          elements.inputLabel.innerText.toLowerCase() === say.toLowerCase()
+            ? 0
+            : 2;
+
         elements.input.value = "";
 
         showInput(false);
-        mta.triggerEvent("onChat2SendMessage", inputMessage);
+        mta.triggerEvent("onChat2SendMessage", inputMessage, inputType);
         setTimeout(mta.triggerEvent, 100, "onChat2Input", "0");
         scrollToBottom(true);
       }
@@ -290,6 +351,8 @@
       function onDOMContentLoaded() {
         elements = {
           chat: document.querySelector(".chat"),
+          inputBlock: document.querySelector(".chat__input-block"),
+          inputLabel: document.querySelector(".chat__input-label"),
           input: document.querySelector(".chat__input"),
           chatMessages: document.querySelector(".chat__messages"),
           chatMessagesContainer: document.querySelector(

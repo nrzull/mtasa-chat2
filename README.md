@@ -67,7 +67,7 @@ This chat is using CEF and it tries to simulate behavior of default chat
 #### Events
 
 - **onPlayerChat2**
-  handler params: (element player, string message)
+  handler params: (element player, string message, int messageType)
   Will be emitted only after useDefaultOutput(false)
 
 ### Examples:
@@ -78,7 +78,7 @@ addEventHandler("onPlayerJoin", root, function()
  exports.chat2:useDefaultOutput(false) -- disable built-in handler and use own handlers that listen for "onPlayerChat2" event
 end)
 
-addEventHandler("onPlayerChat2", root, function(sender, message)
+addEventHandler("onPlayerChat2", root, function(sender, message, messageType)
  local text = string.format("%s wrote: %s", getPlayerName(sender), message)
 
  for _, player in ipairs(getElementsByType("player")) do

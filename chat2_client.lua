@@ -79,8 +79,8 @@ function onChatInput(isActive)
   end
 end
 
-function onChatSendMessage(message)
-  triggerServerEvent("onChat2SendMessage", resourceRoot, message)
+function onChatSendMessage(message, messageType)
+  triggerServerEvent("onChat2SendMessage", resourceRoot, message, messageType)
 end
 
 addEventHandler("onClientResourceStart", resourceRoot, onResourceStart)
