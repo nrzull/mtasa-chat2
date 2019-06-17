@@ -1,6 +1,6 @@
 ## Description
 
-This chat is using CEF and it tries to become full replacement for default chat
+This chat is using CEF and it tries to simulate behavior of default chat
 
 ## Pros
 
@@ -11,9 +11,31 @@ This chat is using CEF and it tries to become full replacement for default chat
 
 ## Cons
 
-- For execution of custom commands resource needs an access right for [ExecuteCommandHandler](https://wiki.multitheftauto.com/wiki/ExecuteCommandHandler) in ACL
-- It can't execute built-in commands like `/nick`, `/login`, etc "due to security reasons." (c) mta wiki. You need to write your own custom handlers for this commands
-- It can't be used until resource starts so you can't write useful messages to player in `onPlayerConnect` event handler
+- It can't execute built-in commands like `/nick`, `/login`, etc "due to security reasons." (c) mta wiki. You need to write your own custom handlers for this commands or just use console for such commands. Custom commands still work as expected.
+- It can't be used until resource starts so you can't write useful messages to player in `onPlayerConnect` event handler. use `onPlayerJoin` instead
+
+## Getting Started
+
+- download [resource](https://github.com/nrzull/mtasa-chat2/releases/latest/download/chat2.zip)
+- move this resource to `server/mods/deathmatch/resources/` directory
+- add to `server/mods/deathmatch/mtaserver.conf`:
+
+```xml
+<resource src="chat2" startup="1" protected="0" />
+```
+
+- add to `server/mods/deathmatch/acl.xml`:
+
+```xml
+<group name="chat2ACLGroup">
+  <acl name="chat2ACL"></acl>
+  <object name="resource.chat2"></object>
+</group>
+
+<acl name="chat2ACL">
+  <right name="function.executeCommandHandler" access="true"></right>
+</acl>
+```
 
 ## API
 
@@ -25,7 +47,7 @@ This chat is using CEF and it tries to become full replacement for default chat
   Writes a message to chat. Hex colors processing is enabled by default and this behavior can't be configured by end-user.
 
 - **clear() -> void**
-  Clears all messages. Chat doesn't have history.
+  Clears all messages.
 
 - **isVisible() -> bool**
   Returns true/false if chat is visible.
@@ -52,13 +74,14 @@ This chat is using CEF and it tries to become full replacement for default chat
 
 ```lua
 addEventHandler("onPlayerJoin", root, function()
- exports.chat2:output(source, "#ccff00hello from default output #ffcc00chat")
+ exports.chat2:output(source, "#ccff00hello #ffcc00world")
  exports.chat2:useDefaultOutput(false) -- disable built-in handler and use own handlers that listen for "onPlayerChat2" event
 end)
 
 addEventHandler("onPlayerChat2", root, function(sender, message)
+ local text = string.format("%s wrote: %s", getPlayerName(sender), message)
+
  for _, player in ipairs(getElementsByType("player")) do
-    local text = string.format("%s wrote: %s", nickname, message)
     output(player, text)
   end
 end)
