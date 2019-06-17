@@ -1,5 +1,5 @@
 <meta>
-  <info name="chat2" type="script" version="0.2.0" author="nrzull" />
+  <info name="chat2" type="script" version="0.3.0" author="nrzull" />
 
   <script src="chat2_server.lua" type="server" />
   <script src="chat2_client.lua" type="client" />
@@ -9,5 +9,5 @@
   <export function="show" type="shared" />
   <export function="output" type="shared" />
   <export function="isVisible" type="shared" />
-  <export function="useDefaultOutput" type="server" />
+  <export function="useCustomEventHandlers" type="server" />
 </meta>

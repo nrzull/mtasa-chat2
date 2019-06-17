@@ -75,14 +75,20 @@ This chat is using CEF and it tries to simulate behavior of default chat
 ```lua
 addEventHandler("onPlayerJoin", root, function()
  exports.chat2:output(source, "#ccff00hello #ffcc00world")
- exports.chat2:useDefaultOutput(false) -- disable built-in handler and use own handlers that listen for "onPlayerChat2" event
+ exports.chat2:useCustomEventHandlers(true) -- need to be executed if you want to disable default output handler and use your own output handlers
 end)
 
-addEventHandler("onPlayerChat2", root, function(sender, message, messageType)
- local text = string.format("%s wrote: %s", getPlayerName(sender), message)
+-- listen for say/teamsay commands from console
+-- may be created if useDefaultOutput was set to 'false'
+addEventHandler("onPlayerChat", root, function(message, messageType)
+  -- some logic
+end)
 
- for _, player in ipairs(getElementsByType("player")) do
-    output(player, text)
-  end
+-- listen for direct output from chat
+-- may be created if useDefaultOutput was set to 'false'
+addEventHandler("onPlayerChat2", root, function(sender, message, messageType)
+ if message == "ping" then
+   exports.chat2:output(sender, "pong")
+ end
 end)
 ```

@@ -5,17 +5,6 @@ local isDefaultOutput = true
 local minLength = 1
 local maxLength = 96
 
-local rootPlayers = createElement("rootPlayers")
-setElementParent(rootPlayers, root)
-
-function registerPlayer(p)
-  setElementParent(p or source, rootPlayers)
-end
-
-for _, p in ipairs(getElementsByType("player")) do
-  registerPlayer(p)
-end
-
 function clear(player)
   triggerClientEvent(player, "onChat2Clear", player)
 end
@@ -32,8 +21,8 @@ function output(player, message)
   triggerClientEvent(player, "onChat2Output", player, message)
 end
 
-function useDefaultOutput(bool)
-  isDefaultOutput = bool
+function useCustomEventHandlers(bool)
+  isDefaultOutput = not bool
 end
 
 function RGBToHex(red, green, blue)
@@ -61,7 +50,7 @@ function onChatSendMessage(message, messageType)
   messageType = tonumber(messageType)
 
   if not isDefaultOutput then
-    triggerEvent("onPlayerChat2", rootPlayers, client, message, messageType)
+    triggerEvent("onPlayerChat2", root, client, message, messageType)
     return
   end
 
@@ -106,14 +95,20 @@ function handleCommand(client, input)
   executeCommandHandler(cmd, client, unpack(splittedInput))
 end
 
-function onPlayerJoin()
-  registerPlayer(source)
+-- listen for "say / teamsay" from player console
+function onPlayerChat(message, messageType)
+  if isDefaultOutput then
+    defaultOutput(source, message, messageType)
+  end
 end
 
-function onPlayerChat(message, messageType)
-  defaultOutput(source, message, messageType)
+-- listen for messages that were sent from resources
+function onChatMessage(message, elementOrResource)
+  if not isElement(elementOrResource) then
+    output(root, message)
+  end
 end
 
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
-addEventHandler("onPlayerJoin", root, onPlayerJoin)
 addEventHandler("onPlayerChat", root, onPlayerChat)
+addEventHandler("onChatMessage", root, onChatMessage)
