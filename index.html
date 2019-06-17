@@ -116,6 +116,8 @@
         lastRegisteredDelayCallback: null
       };
 
+      const hexRegex = /#[0-9A-F]{6}/gi;
+
       let elements;
 
       function show(bool) {
@@ -186,15 +188,38 @@
 
       function processTextWithHexCode(text) {
         const results = [];
-        const regex = /#[0-9A-F]{6}/gi;
-        const hexCodes = text.match(regex);
-        const parts = text.split(regex);
+        const hexCodes = text.match(hexRegex);
+        const parts = text.split(hexRegex);
+
         for (let i = 0; i < parts.length; i++) {
           const part = parts[i];
           if (part === "") continue;
           results.push({ text: part, color: i === 0 ? null : hexCodes[i - 1] });
         }
+
         return results;
+      }
+
+      function registerDelayCallback() {
+        state.canScrollToBottom = false;
+
+        let callback = function() {
+          if (!state.lastRegisteredDelayCallback) return;
+
+          if (
+            callback.uniqueId !== state.lastRegisteredDelayCallback.uniqueId
+          ) {
+            return;
+          }
+
+          state.canScrollToBottom = true;
+          scrollToBottom();
+          state.lastRegisteredDelayCallback = null;
+        };
+        callback.uniqueId = Date.now();
+
+        state.lastRegisteredDelayCallback = callback;
+        setTimeout(callback, 5000);
       }
 
       function onKeydownInputButton(ev) {
@@ -259,26 +284,7 @@
           return;
         }
 
-        state.canScrollToBottom = false;
-
-        let registeredCallback = function() {
-          if (!state.lastRegisteredDelayCallback) return;
-
-          if (
-            registeredCallback.uniqueId !==
-            state.lastRegisteredDelayCallback.uniqueId
-          ) {
-            return;
-          }
-
-          state.canScrollToBottom = true;
-          scrollToBottom();
-          state.lastRegisteredDelayCallback = null;
-        };
-        registeredCallback.uniqueId = Date.now();
-
-        state.lastRegisteredDelayCallback = registeredCallback;
-        setTimeout(registeredCallback, 5000);
+        registerDelayCallback();
       }
 
       function onDOMContentLoaded() {
@@ -292,14 +298,14 @@
         };
 
         elements.input.addEventListener("keydown", preventPressTab);
+        document.addEventListener("keydown", onKeydownInputButton);
+        document.addEventListener("keydown", onKeydownEnterButton);
         document.addEventListener("keydown", onKeydownScrollButton);
         document.addEventListener("keyup", onKeyupScrollButton);
         mta.triggerEvent("onChat2Loaded");
       }
 
       document.addEventListener("DOMContentLoaded", onDOMContentLoaded);
-      document.addEventListener("keydown", onKeydownInputButton);
-      document.addEventListener("keydown", onKeydownEnterButton);
     </script>
   </body>
 </html>
