@@ -89,7 +89,14 @@ function handleCommand(client, input)
   local splittedInput = split(input, " ")
   local slashCmd = table.remove(splittedInput, 1)
   local cmd = utf8.sub(slashCmd, 2, utf8.len(slashCmd))
-  executeCommandHandler(cmd, client, unpack(splittedInput))
+
+  local args = ""
+  for _, arg in ipairs(splittedInput) do
+    args = string.format("%s %s", args, arg)
+  end
+  args = utf8.sub(args, 2, utf8.len(args))
+
+  executeCommandHandler(cmd, client, args)
 end
 
 -- listen for "say / teamsay" from player console
