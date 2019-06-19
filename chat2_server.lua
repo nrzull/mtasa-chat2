@@ -52,7 +52,7 @@ end
 function defaultOutput(sender, message, messageType)
   local nickname = getPlayerName(sender)
   local team = getPlayerTeam(sender)
-  local text = string.format("%s#ffffff: %s", nickname, message)
+  local text = string.format("%s: %s", nickname, message)
   local teamColor
 
   if team then
@@ -77,7 +77,12 @@ function defaultOutput(sender, message, messageType)
     end
   end
 
-  outputServerLog(pregReplace(text, "#[a-f0-9]{6}", "", "i"))
+  local serverLogMessage = pregReplace(text, "#[a-f0-9]{6}", "", "i")
+  if type(serverLogMessage) ~= "string" then
+    serverLogMessage = text
+  end
+
+  outputServerLog(serverLogMessage)
 end
 
 function handleCommand(client, input)
