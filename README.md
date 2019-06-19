@@ -50,13 +50,20 @@ After reviewing of all default mta resources code for just to be sure that there
 
 #### Functions
 
+- `outputChatBox(string message, int red?, int green?, int blue?) -> void`
+  Note that there is no last parameter `colorcoded`. Hex processing is enabled by default
+- `showChat(bool show) -> void`
+- `clearChatBox() -> void`
 - `exports.chat2:isChatVisible() -> bool`
-  Returns true/false if chat is visible.
 
 ### Serverside
 
 #### Functions
 
+- `outputChatBox(string message, element elem?, int red?, int green?, int blue?) -> void`
+  Note that there is no last parameter `colorcoded`. Hex processing is enabled by default
+- `showChat(element elem, bool show) -> void`
+- `clearChatBox(element elem) -> void`
 - `exports.chat2:useCustomEventHandlers(bool) -> void`
   Enable/disable default output. If you disable it, then you need to write your own custom handlers for `onPlayerChat2` event
 
