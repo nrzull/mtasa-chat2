@@ -1,6 +1,6 @@
 ## Description
 
-This chat is using CEF and it tries to simulate behavior of default chat
+This chat uses CEF and it tries to simulate behavior of default chat
 
 ## Pros
 
@@ -21,6 +21,7 @@ This chat is using CEF and it tries to simulate behavior of default chat
 - add to `server/mods/deathmatch/mtaserver.conf`:
 
 ```xml
+<!-- set this resource before all other resources -->
 <resource src="chat2" startup="1" protected="0" />
 ```
 
@@ -39,43 +40,40 @@ This chat is using CEF and it tries to simulate behavior of default chat
 
 ## API
 
+The resource intercepts `outputChatBox`, `clearChatBox` and `showChat` function calls and redirect their calls to internal `output`, `clear`, `show` so you can still use default MTA functions as before and all of your resources should probably work correct.
+
+**WARNING!** THIS FUNCTIONS DO NOT RETURN ANY VALUES NO MORE AS BEFORE. IF YOU RELY ON RETURN VALUES, THEN YOU SHOULD REWRITE YOUR CODE OR DO NOT USE THIS RESOURCE AT ALL!
+
+After reviewing of all default mta resources code for just to be sure that there is no code that rely on return values, I made decision to change behavior of these functions. Also this decision was made when I realize that this resource is useless without easy integration in existing ecosystem. Noone will rewrite their codebase for just replacing one chat with another. And after all, some closed resources may use default chat API and you probably will not be able to change that. Sorry for this dirty hack. I apologize for it.
+
 ### Clientside
 
 #### Functions
 
-- **output(string message) -> void**
-  Writes a message to chat. Hex colors processing is enabled by default and this behavior can't be configured by end-user.
-
-- **clear() -> void**
-  Clears all messages.
-
-- **isVisible() -> bool**
+- `exports.chat2:isChatVisible() -> bool`
   Returns true/false if chat is visible.
-
-- **show(bool b) -> void**
-  Shows/hides a chat.
 
 ### Serverside
 
 #### Functions
 
-- **output(element player, string message) -> void**
-- **clear(element player) -> void**
-- **isVisible(element player) -> bool**
-- **show(element player, bool b) -> void**
+- `exports.chat2:useCustomEventHandlers(bool) -> void`
+  Enable/disable default output. If you disable it, then you need to write your own custom handlers for `onPlayerChat2` event
 
 #### Events
 
-- **onPlayerChat2**
+- `onPlayerChat2`
   handler params: (element player, string message, int messageType)
-  Will be emitted only after useDefaultOutput(false)
+  Will be emitted only after `exports.chat2:useCustomEventHandlers(false)`
 
 ### Examples:
 
 ```lua
 addEventHandler("onPlayerJoin", root, function()
- exports.chat2:output(source, "#ccff00hello #ffcc00world")
- exports.chat2:useCustomEventHandlers(true) -- need to be executed if you want to disable default output handler and use your own output handlers
+  outputChatBox("#ccff00hellow #ffcc00world", source)
+  -- clearChatBox(source)
+  outputChatBox("i'm red af", source, 255, 0, 0)
+  exports.chat2:useCustomEventHandlers(true) -- need to be executed if you want to disable default output handler and use your own output handlers
 end)
 
 -- listen for say/teamsay commands from console
@@ -88,7 +86,7 @@ end)
 -- may be created if useCustomEventHandlers was set to 'true'
 addEventHandler("onPlayerChat2", root, function(sender, message, messageType)
  if message == "ping" then
-   exports.chat2:output(sender, "pong")
+    outputChatBox("pong", sender)
  end
 end)
 ```

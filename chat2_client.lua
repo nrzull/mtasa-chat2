@@ -2,6 +2,10 @@ local chatInstance
 local chatInstanceLoading
 local chatInstanceLoaded
 
+local state = {
+  show = false
+}
+
 addEvent("onChat2Loaded")
 addEvent("onChat2Input")
 addEvent("onChat2SendMessage")
@@ -28,13 +32,15 @@ function output(message)
     return setTimer(output, 250, 1, message)
   end
 
-  local eval = string.format("addMessage(%s)", toJSON(message))
-  execute(eval)
+  execute(string.format("addMessage(%s)", toJSON(message)))
 end
 
 function clear()
-  local eval = "clear()"
-  execute(eval)
+  execute("clear()")
+end
+
+function isChatVisible()
+  return state.show
 end
 
 function show(bool)
@@ -47,23 +53,8 @@ function show(bool)
     end
   end
 
-  local eval = "show(" .. tostring(bool) .. ");"
-  execute(eval)
-  setElementData(localPlayer, "chat2IsVisible", bool)
-end
-
-function isVisible()
-  return getElementData(localPlayer, "chat2IsVisible", false)
-end
-
-function onResourceStart()
-  showChat(false)
-  show(true)
-end
-
-function onResourceStop()
-  show(false)
-  showChat(true)
+  execute(string.format("show(%s)", tostring(bool)))
+  state.show = bool
 end
 
 function onChatLoaded()
@@ -105,19 +96,21 @@ function listenForClearChatBox()
 end
 
 function onClientResourceStart()
-  addDebugHook("preFunction", listenForOutputChatBox, {"outputChatBox"})
+  showChat(false)
   addDebugHook("preFunction", listenForShowChat, {"showChat"})
+  addDebugHook("preFunction", listenForOutputChatBox, {"outputChatBox"})
   addDebugHook("preFunction", listenForClearChatBox, {"clearChatBox"})
+  showChat(true)
 end
 
 function onClientResourceStop()
-  removeDebugHook("preFunction", listenForOutputChatBox)
+  showChat(false)
   removeDebugHook("preFunction", listenForShowChat)
+  removeDebugHook("preFunction", listenForOutputChatBox)
   removeDebugHook("preFunction", listenForClearChatBox)
+  showChat(true)
 end
 
-addEventHandler("onClientResourceStart", resourceRoot, onResourceStart)
-addEventHandler("onClientResourceStop", resourceRoot, onResourceStop)
 addEventHandler("onChat2Loaded", resourceRoot, onChatLoaded)
 addEventHandler("onChat2Input", resourceRoot, onChatInput)
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
