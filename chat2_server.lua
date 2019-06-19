@@ -115,14 +115,22 @@ function listenForOutputChatBox(_, _, _, _, _, message, receiver, r, g, b)
   end
 
   output(receiver, string.format("%s%s", hexColor, message))
+  return "skip"
+end
+
+function listenForShowChat(_, _, _, _, _, player, bool)
+  show(player, bool)
+  return "skip"
 end
 
 function onResourceStart()
-  addDebugHook("postFunction", listenForOutputChatBox, {"outputChatBox"})
+  addDebugHook("preFunction", listenForOutputChatBox, {"outputChatBox"})
+  addDebugHook("preFunction", listenForShowChat, {"showChat"})
 end
 
 function onResourceStop()
-  removeDebugHook("postFunction", listenForOutputChatBox)
+  removeDebugHook("preFunction", listenForOutputChatBox)
+  removeDebugHook("preFunction", listenForShowChat)
 end
 
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)

@@ -93,12 +93,19 @@ function listenForOutputChatBox(_, _, _, _, _, message, r, g, b)
   output(string.format("%s%s", hexColor, message))
 end
 
+function listenForShowChat(_, _, _, _, _, bool)
+  show(bool)
+  return "skip"
+end
+
 function onClientResourceStart()
   addDebugHook("postFunction", listenForOutputChatBox, {"outputChatBox"})
+  addDebugHook("preFunction", listenForShowChat, {"showChat"})
 end
 
 function onClientResourceStop()
   removeDebugHook("postFunction", listenForOutputChatBox)
+  removeDebugHook("preFunction", listenForShowChat)
 end
 
 addEventHandler("onClientResourceStart", resourceRoot, onResourceStart)
