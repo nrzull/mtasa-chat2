@@ -25,14 +25,6 @@ function useCustomEventHandlers(bool)
   isDefaultOutput = not bool
 end
 
-function RGBToHex(red, green, blue)
-  if (red < 0 or red > 255 or green < 0 or green > 255 or blue < 0 or blue > 255) then
-    return nil
-  end
-
-  return string.format("#%.2X%.2X%.2X", red, green, blue)
-end
-
 function onChatSendMessage(message, messageType)
   if type(message) ~= "string" or utf8.len(message) < minLength or utf8.len(message) > maxLength then
     return
@@ -102,13 +94,26 @@ function onPlayerChat(message, messageType)
   end
 end
 
--- listen for messages that were sent from resources
-function onChatMessage(message, elementOrResource)
-  if not isElement(elementOrResource) then
-    output(root, message)
+function listenForOutputChatBox(_, _, _, _, _, message, receiver, r, g, b)
+  receiver = receiver or root
+  local hexColor = ""
+
+  if (r and g and b) then
+    hexColor = RGBToHex(r, g, b)
   end
+
+  output(receiver, string.format("%s%s", hexColor, message))
+end
+
+function onResourceStart()
+  addDebugHook("postFunction", listenForOutputChatBox, {"outputChatBox"})
+end
+
+function onResourceStop()
+  removeDebugHook("postFunction", listenForOutputChatBox)
 end
 
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
 addEventHandler("onPlayerChat", root, onPlayerChat)
-addEventHandler("onChatMessage", root, onChatMessage)
+addEventHandler("onResourceStart", resourceRoot, onResourceStart)
+addEventHandler("onResourceStop", resourceRoot, onResourceStop)

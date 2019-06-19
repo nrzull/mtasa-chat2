@@ -41,9 +41,9 @@ function show(bool)
   if chatInstanceLoaded ~= true then
     if chatInstanceLoading ~= true then
       create()
-      setTimer(show, 300, 1, bool)
+      return setTimer(show, 300, 1, bool)
     else
-      setTimer(show, 300, 1, bool)
+      return setTimer(show, 300, 1, bool)
     end
   end
 
@@ -83,6 +83,24 @@ function onChatSendMessage(message, messageType)
   triggerServerEvent("onChat2SendMessage", resourceRoot, message, messageType)
 end
 
+function listenForOutputChatBox(_, _, _, _, _, message, r, g, b)
+  local hexColor = ""
+
+  if (r and g and b) then
+    hexColor = RGBToHex(r, g, b)
+  end
+
+  output(string.format("%s%s", hexColor, message))
+end
+
+function onClientResourceStart()
+  addDebugHook("postFunction", listenForOutputChatBox, {"outputChatBox"})
+end
+
+function onClientResourceStop()
+  removeDebugHook("postFunction", listenForOutputChatBox)
+end
+
 addEventHandler("onClientResourceStart", resourceRoot, onResourceStart)
 addEventHandler("onClientResourceStop", resourceRoot, onResourceStop)
 addEventHandler("onChat2Loaded", resourceRoot, onChatLoaded)
@@ -91,3 +109,5 @@ addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
 addEventHandler("onChat2Output", localPlayer, output)
 addEventHandler("onChat2Clear", localPlayer, clear)
 addEventHandler("onChat2Show", localPlayer, show)
+addEventHandler("onClientResourceStart", resourceRoot, onClientResourceStart)
+addEventHandler("onClientResourceStop", resourceRoot, onClientResourceStop)
