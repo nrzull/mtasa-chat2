@@ -123,14 +123,21 @@ function listenForShowChat(_, _, _, _, _, player, bool)
   return "skip"
 end
 
+function listenForClearChatBox(_, _, _, _, _, player)
+  clear(player)
+  return "skip"
+end
+
 function onResourceStart()
   addDebugHook("preFunction", listenForOutputChatBox, {"outputChatBox"})
   addDebugHook("preFunction", listenForShowChat, {"showChat"})
+  addDebugHook("preFunction", listenForClearChatBox, {"clearChatBox"})
 end
 
 function onResourceStop()
   removeDebugHook("preFunction", listenForOutputChatBox)
   removeDebugHook("preFunction", listenForShowChat)
+  removeDebugHook("preFunction", listenForClearChatBox)
 end
 
 addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
