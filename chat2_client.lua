@@ -57,7 +57,9 @@ function isVisible()
 end
 
 function onResourceStart()
-  showChat(false)
+  if (isChatVisible(true)) then
+    showChat(false)
+  end
   show(true)
 end
 
@@ -65,6 +67,15 @@ function onResourceStop()
   show(false)
   showChat(true)
 end
+
+addEventHandler("onClientCharacter", root, function(character)
+  if (character == "t" or character == "y") then
+    if (isChatVisible(true)) then
+      showChat(false)
+    end
+  end
+end
+)
 
 function onChatLoaded()
   chatInstanceLoaded = true
