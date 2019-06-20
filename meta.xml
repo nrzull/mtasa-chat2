@@ -6,6 +6,8 @@
   <script src="chat2_client.lua" type="client" />
 
   <file src="index.html" />
+  <file src="styles.css" />
+  <file src="scripts.js" />
 
   <export function="isChatVisible" type="client" />
   <export function="useCustomEventHandlers" type="server" />
