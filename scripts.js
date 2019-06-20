@@ -27,12 +27,8 @@ function show(bool) {
 
   if (bool) {
     elements.input.addEventListener("keydown", preventPressTab);
-    document.addEventListener("keydown", onKeydownScrollButton);
-    document.addEventListener("keyup", onKeyupScrollButton);
   } else {
     elements.input.removeEventListener("keydown", preventPressTab);
-    document.removeEventListener("keydown", onKeydownScrollButton);
-    document.removeEventListener("keyup", onKeyupScrollButton);
   }
 
   scrollToBottom();
@@ -55,7 +51,7 @@ function showInput([definition]) {
 function hideInput() {
   elements.inputBlock.classList.add("hidden");
   elements.input.blur();
-  remove.addEventListener("keydown", onKeydownEnterButton);
+  document.removeEventListener("keydown", onKeydownEnterButton);
 }
 
 function addMessage([message]) {
@@ -97,11 +93,11 @@ function render(message) {
   elements.chatMessagesContainer.append(messageElement);
 }
 
-function scroll() {
+function scroll(definition) {
   if (!state.scroll) return;
-  const value = state.scroll == keyCodes.pageUp ? -5 : 5;
+  const value = definition == "scrollup" ? -5 : 5;
   elements.chatMessages.scrollBy({ top: value });
-  setTimeout(scroll, 25);
+  setTimeout(scroll, 25, definition);
 }
 
 function clear() {
@@ -148,28 +144,12 @@ function onKeydownEnterButton(ev) {
   scrollToBottom(true);
 }
 
-function onKeydownScrollButton(ev) {
-  const { keyCode } = ev;
-  const { pageUp, pageDown } = keyCodes;
-
-  if (!state.show) return;
-  if (keyCode !== pageUp && keyCode !== pageDown) return;
-  if (state.scroll) return;
-
-  if (keyCode == pageUp) state.scroll = pageUp;
-  else state.scroll = pageDown;
-
-  scroll();
+function startScroll([definition]) {
+  state.scroll = true;
+  scroll(definition);
 }
 
-function onKeyupScrollButton(ev) {
-  const { keyCode } = ev;
-  const { pageUp, pageDown } = keyCodes;
-
-  if (!state.show) return;
-  if (keyCode !== pageUp && keyCode !== pageDown) return;
-  if (!state.scroll) return;
-
+function stopScroll() {
   state.scroll = false;
 
   const isEndOfScroll =

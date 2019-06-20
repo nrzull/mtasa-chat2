@@ -4,12 +4,19 @@ local chatInstanceLoaded
 
 local state = {
   show = false,
-  activeKeyButton = nil
+  activeInputKeyButton = nil,
+  activeScrollKeyButton = nil
 }
 
-local keyButtons = {
+-- Define your local/global/team/etc input types here
+local inputKeyButtons = {
   ["t"] = "say",
   ["y"] = "teamsay"
+}
+
+local scrollKeyButtons = {
+  ["pgup"] = "scrollup",
+  ["pgdn"] = "scrolldown"
 }
 
 addEvent("onChat2Loaded")
@@ -63,8 +70,16 @@ function show(bool)
 end
 
 function registerKeyButtons()
-  for keyButton, definition in pairs(keyButtons) do
+  for keyButton, definition in pairs(inputKeyButtons) do
     bindKey(keyButton, "down", onChatInputButton, keyButton, definition)
+  end
+
+  for keyButton, definition in pairs(scrollKeyButtons) do
+    bindKey(keyButton, "down", onChatScrollStartButton, keyButton, definition)
+  end
+
+  for keyButton, definition in pairs(scrollKeyButtons) do
+    bindKey(keyButton, "up", onChatScrollStopButton, keyButton, definition)
   end
 end
 
@@ -82,14 +97,14 @@ function onChatInputButton(_, _, keyButton, definition)
     return
   end
 
-  if state.activeKeyButton then
+  if state.activeInputKeyButton then
     return
   end
 
   execute(string.format("showInput(%s)", toJSON(definition)))
   focusBrowser(chatInstance)
   guiSetInputEnabled(true)
-  state.activeKeyButton = keyButton
+  state.activeInputKeyButton = keyButton
 end
 
 function onChatEnterButton(message)
@@ -97,14 +112,32 @@ function onChatEnterButton(message)
     return
   end
 
-  if not state.activeKeyButton then
+  if not state.activeInputKeyButton then
     return
   end
 
   execute("hideInput()")
   guiSetInputEnabled(false)
-  triggerServerEvent("onChat2SendMessage", resourceRoot, message, keyButtons[state.activeKeyButton])
-  state.activeKeyButton = nil
+  triggerServerEvent("onChat2Message", resourceRoot, message, inputKeyButtons[state.activeInputKeyButton])
+  state.activeInputKeyButton = nil
+end
+
+function onChatScrollStartButton(_, _, keyButton, definition)
+  if state.activeScrollKeyButton then
+    return
+  end
+
+  execute(string.format("startScroll(%s)", toJSON(definition)))
+  state.activeScrollKeyButton = keyButton
+end
+
+function onChatScrollStopButton(_, _, _, definition)
+  if not state.activeScrollKeyButton then
+    return
+  end
+
+  execute("stopScroll()")
+  state.activeScrollKeyButton = nil
 end
 
 function listenForOutputChatBox(_, _, _, _, _, message, r, g, b)

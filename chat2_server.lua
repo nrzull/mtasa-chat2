@@ -1,4 +1,4 @@
-addEvent("onChat2SendMessage", true)
+addEvent("onChat2Message", true)
 addEvent("onPlayerChat2")
 
 local isDefaultOutput = true
@@ -19,22 +19,6 @@ end
 
 function useCustomEventHandlers(bool)
   isDefaultOutput = not bool
-end
-
-function onChatSendMessage(message, messageType)
-  if type(message) ~= "string" or utf8.len(message) < minLength or utf8.len(message) > maxLength then
-    return
-  end
-
-  if utf8.sub(message, 0, 1) == "/" then
-    return handleCommand(client, message)
-  end
-
-  if not isDefaultOutput then
-    return triggerEvent("onPlayerChat2", root, client, message, messageType)
-  end
-
-  defaultOutput(client, message, messageType)
 end
 
 function defaultOutput(sender, message, messageType)
@@ -99,6 +83,22 @@ function handleCommand(client, input)
   executeCommandHandler(cmd, client, args)
 end
 
+function onChatMessage(message, messageType)
+  if type(message) ~= "string" or utf8.len(message) < minLength or utf8.len(message) > maxLength then
+    return
+  end
+
+  if utf8.sub(message, 0, 1) == "/" then
+    return handleCommand(client, message)
+  end
+
+  if not isDefaultOutput then
+    return triggerEvent("onPlayerChat2", root, client, message, messageType)
+  end
+
+  defaultOutput(client, message, messageType)
+end
+
 function listenForOutputChatBox(_, _, _, _, _, message, receiver, r, g, b)
   receiver = receiver or root
   local hexColor = ""
@@ -133,6 +133,6 @@ function onResourceStop()
   removeDebugHook("preFunction", listenForClearChatBox)
 end
 
-addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
+addEventHandler("onChat2Message", resourceRoot, onChatMessage)
 addEventHandler("onResourceStart", resourceRoot, onResourceStart)
 addEventHandler("onResourceStop", resourceRoot, onResourceStop)
