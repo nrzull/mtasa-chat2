@@ -108,14 +108,6 @@
         border-radius: 1vh;
       }
 
-      .chat__input.say {
-        padding-left: 15vh;
-      }
-
-      .chat__input.teamsay {
-        padding-left: 24vh;
-      }
-
       .chat__input:focus {
         outline: none;
       }
@@ -134,8 +126,6 @@
 
     <script>
       const keyCodes = {
-        t: 84,
-        y: 89,
         enter: 13,
         tab: 9,
         pageUp: 33,
@@ -159,40 +149,43 @@
       let elements;
 
       function show(bool) {
-        state.show = bool;
         if (!bool) return elements.chat.classList.add("hidden");
         elements.chat.classList.remove("hidden");
+
+        if (bool) {
+          elements.input.addEventListener("keydown", preventPressTab);
+          document.addEventListener("keydown", onKeydownScrollButton);
+          document.addEventListener("keyup", onKeyupScrollButton);
+        } else {
+          elements.input.removeEventListener("keydown", preventPressTab);
+          document.removeEventListener("keydown", onKeydownScrollButton);
+          document.removeEventListener("keyup", onKeyupScrollButton);
+        }
 
         scrollToBottom();
       }
 
-      function showInput(isShow, keyCode) {
-        const key =
-          keyCode == keyCodes.t ? "t" : keyCode == keyCodes.y ? "y" : null;
+      function showInput([definition]) {
+        elements.input.value = "";
+        elements.inputLabel.innerText = definition;
+        elements.inputBlock.classList.remove("hidden");
 
-        state.showInput = isShow;
+        elements.input.style.paddingLeft = `${elements.inputLabel.offsetWidth +
+          10}px`;
 
-        if (isShow) elements.inputBlock.classList.remove("hidden");
-        else elements.inputBlock.classList.add("hidden");
+        setTimeout(() => {
+          elements.input.focus();
+          document.addEventListener("keydown", onKeydownEnterButton);
+        }, 0);
+      }
 
-        if (isShow) {
-          if (key == "t") {
-            elements.inputLabel.innerText = say;
-            elements.input.classList.add("say");
-            elements.input.classList.remove("teamsay");
-          }
-
-          if (key == "y") {
-            elements.inputLabel.innerText = teamsay;
-            elements.input.classList.add("teamsay");
-            elements.input.classList.remove("say");
-          }
-        }
+      function hideInput() {
+        elements.inputBlock.classList.add("hidden");
+        elements.input.blur();
+        remove.addEventListener("keydown", onKeydownEnterButton);
       }
 
       function addMessage([message]) {
-        if (!state.show) return;
-
         render(message);
         scrollToBottom();
       }
@@ -278,35 +271,9 @@
         setTimeout(callback, 5000);
       }
 
-      function onKeydownInputButton(ev) {
-        if (!state.show) return;
-        if (ev.keyCode !== keyCodes.t && ev.keyCode !== keyCodes.y) return;
-        if (state.showInput) return;
-
-        showInput(true, ev.keyCode);
-        setTimeout(() => {
-          mta.triggerEvent("onChat2Input", "1");
-          elements.input.focus();
-        }, 0);
-      }
-
       function onKeydownEnterButton(ev) {
-        if (!state.show) return;
         if (ev.keyCode !== keyCodes.enter) return;
-        if (!state.showInput) return;
-
-        const inputMessage = elements.input.value;
-
-        const inputType =
-          elements.inputLabel.innerText.toLowerCase() === say.toLowerCase()
-            ? 0
-            : 2;
-
-        elements.input.value = "";
-
-        showInput(false);
-        mta.triggerEvent("onChat2SendMessage", inputMessage, inputType);
-        setTimeout(mta.triggerEvent, 100, "onChat2Input", "0");
+        mta.triggerEvent("onChat2EnterButton", elements.input.value);
         scrollToBottom(true);
       }
 
@@ -361,11 +328,6 @@
           )
         };
 
-        elements.input.addEventListener("keydown", preventPressTab);
-        document.addEventListener("keydown", onKeydownInputButton);
-        document.addEventListener("keydown", onKeydownEnterButton);
-        document.addEventListener("keydown", onKeydownScrollButton);
-        document.addEventListener("keyup", onKeyupScrollButton);
         mta.triggerEvent("onChat2Loaded");
       }
 

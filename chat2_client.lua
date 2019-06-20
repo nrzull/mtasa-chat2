@@ -3,19 +3,20 @@ local chatInstanceLoading
 local chatInstanceLoaded
 
 local state = {
-  show = false
+  show = false,
+  activeKeyButton = nil
+}
+
+local keyButtons = {
+  ["t"] = "say",
+  ["y"] = "teamsay"
 }
 
 addEvent("onChat2Loaded")
-addEvent("onChat2Input")
-addEvent("onChat2SendMessage")
+addEvent("onChat2EnterButton")
 addEvent("onChat2Output", true)
 addEvent("onChat2Clear", true)
 addEvent("onChat2Show", true)
-
-function execute(eval)
-  executeBrowserJavascript(chatInstance, eval)
-end
 
 function create()
   chatInstance = guiGetBrowser(guiCreateBrowser(0.01, 0.01, 0.25, 0.4, true, true, true))
@@ -30,6 +31,10 @@ end
 function output(message)
   if not chatInstanceLoaded then
     return setTimer(output, 250, 1, message)
+  end
+
+  if not state.show then
+    return
   end
 
   execute(string.format("addMessage(%s)", toJSON(message)))
@@ -57,21 +62,49 @@ function show(bool)
   state.show = bool
 end
 
+function registerKeyButtons()
+  for keyButton, definition in pairs(keyButtons) do
+    bindKey(keyButton, "down", onChatInputButton, keyButton, definition)
+  end
+end
+
+function execute(eval)
+  executeBrowserJavascript(chatInstance, eval)
+end
+
 function onChatLoaded()
   chatInstanceLoaded = true
   focusBrowser(chatInstance)
 end
 
-function onChatInput(isActive)
-  if isActive == "1" then
-    guiSetInputEnabled(true)
-  else
-    guiSetInputEnabled(false)
+function onChatInputButton(_, _, keyButton, definition)
+  if not state.show then
+    return
   end
+
+  if state.activeKeyButton then
+    return
+  end
+
+  execute(string.format("showInput(%s)", toJSON(definition)))
+  focusBrowser(chatInstance)
+  guiSetInputEnabled(true)
+  state.activeKeyButton = keyButton
 end
 
-function onChatSendMessage(message, messageType)
-  triggerServerEvent("onChat2SendMessage", resourceRoot, message, messageType)
+function onChatEnterButton(message)
+  if not state.show then
+    return
+  end
+
+  if not state.activeKeyButton then
+    return
+  end
+
+  execute("hideInput()")
+  guiSetInputEnabled(false)
+  triggerServerEvent("onChat2SendMessage", resourceRoot, message, keyButtons[state.activeKeyButton])
+  state.activeKeyButton = nil
 end
 
 function listenForOutputChatBox(_, _, _, _, _, message, r, g, b)
@@ -101,6 +134,8 @@ function onClientResourceStart()
   addDebugHook("preFunction", listenForOutputChatBox, {"outputChatBox"})
   addDebugHook("preFunction", listenForClearChatBox, {"clearChatBox"})
   showChat(true)
+
+  registerKeyButtons()
 end
 
 function onClientResourceStop()
@@ -112,8 +147,7 @@ function onClientResourceStop()
 end
 
 addEventHandler("onChat2Loaded", resourceRoot, onChatLoaded)
-addEventHandler("onChat2Input", resourceRoot, onChatInput)
-addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
+addEventHandler("onChat2EnterButton", resourceRoot, onChatEnterButton)
 addEventHandler("onChat2Output", localPlayer, output)
 addEventHandler("onChat2Clear", localPlayer, clear)
 addEventHandler("onChat2Show", localPlayer, show)
