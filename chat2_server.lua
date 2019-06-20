@@ -1,7 +1,6 @@
 addEvent("onChat2Message", true)
-addEvent("onPlayerChat2")
 
-local isDefaultOutput = true
+local isDefaultOutput = false
 local minLength = 1
 local maxLength = 96
 
@@ -17,15 +16,20 @@ function output(player, message)
   triggerClientEvent(player, "onChat2Output", player, message)
 end
 
-function useCustomEventHandlers(bool)
-  isDefaultOutput = not bool
+function useDefaultOutput(bool)
+  isDefaultOutput = bool
 end
 
-function defaultOutput(sender, message, messageType)
-  if messageType ~= "say" and messageType ~= "teamsay" then
+function defaultOutput(message, messageType)
+  if not isDefaultOutput then
     return
   end
 
+  if messageType ~= 0 and messageType ~= 2 then
+    return
+  end
+
+  local sender = source
   local nickname = getPlayerName(sender)
   local nicknameColor = ""
   local r, g, b = getPlayerNametagColor(sender)
@@ -48,13 +52,13 @@ function defaultOutput(sender, message, messageType)
     text = string.format("%s%s", teamColor, text)
   end
 
-  if messageType == "say" then
+  if messageType == 0 then
     for _, player in ipairs(getElementsByType("player")) do
       output(player, text)
     end
   end
 
-  if messageType == "teamsay" and team then
+  if messageType == 2 and team then
     text = string.format("%s(team) %s", teamColor, text)
     for _, player in ipairs(getPlayersInTeam(team)) do
       output(player, text)
@@ -88,15 +92,15 @@ function onChatMessage(message, messageType)
     return
   end
 
+  if type(messageType) ~= "number" then
+    return
+  end
+
   if utf8.sub(message, 0, 1) == "/" then
     return handleCommand(client, message)
   end
 
-  if not isDefaultOutput then
-    return triggerEvent("onPlayerChat2", root, client, message, messageType)
-  end
-
-  defaultOutput(client, message, messageType)
+  triggerEvent("onPlayerChat", client, message, messageType)
 end
 
 function listenForOutputChatBox(_, _, _, _, _, message, receiver, r, g, b)
@@ -133,6 +137,7 @@ function onResourceStop()
   removeDebugHook("preFunction", listenForClearChatBox)
 end
 
+addEventHandler("onPlayerChat", root, defaultOutput)
 addEventHandler("onChat2Message", resourceRoot, onChatMessage)
 addEventHandler("onResourceStart", resourceRoot, onResourceStart)
 addEventHandler("onResourceStop", resourceRoot, onResourceStop)

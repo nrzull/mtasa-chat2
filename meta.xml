@@ -10,5 +10,5 @@
   <file src="scripts.js" />
 
   <export function="isChatVisible" type="client" />
-  <export function="useCustomEventHandlers" type="server" />
+  <export function="useDefaultOutput" type="server" />
 </meta>

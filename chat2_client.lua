@@ -9,9 +9,11 @@ local state = {
 }
 
 -- Define your local/global/team/etc input types here
+-- First value of nested indexed table is a name of input type from where you want to send a message. It can be any name and it exists just for easy understanding for what messageType (second value of indexed table) is related.
+-- second value is a messageType. You can define custom messageTypes. 0, 1, 2 are already used by MTA so I do not recommend to redefine them. They are useful when you want to add custom input type, like "global" or "police chat". Do not forget to execute exports.chat2:useDefaultOutput(false) and then handle this messageTypes in "onPlayerChat" event handlers
 local inputKeyButtons = {
-  ["t"] = "say",
-  ["y"] = "teamsay"
+  ["t"] = {"say", 0},
+  ["y"] = {"teamsay", 2}
 }
 
 local scrollKeyButtons = {
@@ -101,7 +103,7 @@ function onChatInputButton(_, _, keyButton, definition)
     return
   end
 
-  execute(string.format("showInput(%s)", toJSON(definition)))
+  execute(string.format("showInput(%s)", toJSON(definition[1])))
   focusBrowser(chatInstance)
   guiSetInputEnabled(true)
   state.activeInputKeyButton = keyButton
@@ -118,7 +120,7 @@ function onChatEnterButton(message)
 
   execute("hideInput()")
   guiSetInputEnabled(false)
-  triggerServerEvent("onChat2Message", resourceRoot, message, inputKeyButtons[state.activeInputKeyButton])
+  triggerServerEvent("onChat2Message", resourceRoot, message, inputKeyButtons[state.activeInputKeyButton][2])
   state.activeInputKeyButton = nil
 end
 
