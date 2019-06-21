@@ -15,7 +15,7 @@ local state = {
 -- second value is a messageType. You can define custom messageTypes. 0, 1, 2
 -- are already used by MTA so I do not recommend to redefine them. They are
 -- useful when you want to add custom input type, like "global" or "police chat".
---Do not forget to execute exports.chat2:useDefaultOutput(false)
+-- Do not forget to execute exports.chat2:useDefaultOutput(false)
 -- and then handle this messageTypes in "onPlayerChat" event handlers
 local inputKeyButtons = {
   ["t"] = {"say", 0},
