@@ -1,3 +1,5 @@
+![showcase](https://i.imgur.com/bMoYPlL.jpg)
+
 ## Description
 
 The chat uses CEF and it tries to simulate behavior of default chat
