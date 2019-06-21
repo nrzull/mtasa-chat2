@@ -1,6 +1,6 @@
 ## Description
 
-This chat uses CEF and it tries to simulate behavior of default chat
+The chat uses CEF and it tries to simulate behavior of default chat
 
 ## Pros
 
@@ -8,6 +8,7 @@ This chat uses CEF and it tries to simulate behavior of default chat
 - Adaptiveness (you don't need to put-on glasses for your 1920x1080 screen to see what others write)
 - Copy/paste from/to input (no more console -> say someLongMessageOrUrl)
 - Customizable (now you can unify a chat for all of your players)
+- Extendable (for example you can make url links in chat clickable or add markdown support)
 
 ## Cons
 
