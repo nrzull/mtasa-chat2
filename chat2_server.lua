@@ -20,7 +20,7 @@ function useDefaultOutput(bool)
   isDefaultOutput = bool
 end
 
-function defaultOutput(message, messageType)
+function onPlayerChat(message, messageType)
   if not isDefaultOutput then
     return
   end
@@ -137,7 +137,7 @@ function onResourceStop()
   removeDebugHook("preFunction", listenForClearChatBox)
 end
 
-addEventHandler("onPlayerChat", root, defaultOutput)
+addEventHandler("onPlayerChat", root, onPlayerChat)
 addEventHandler("onChat2Message", resourceRoot, onChatMessage)
 addEventHandler("onResourceStart", resourceRoot, onResourceStart)
 addEventHandler("onResourceStop", resourceRoot, onResourceStop)
