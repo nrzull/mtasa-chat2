@@ -66,7 +66,11 @@ The chat uses CEF and it tries to simulate behavior of default chat
 
 ```lua
 addEventHandler("onResourceStart", resourceRoot, function()
-  -- exports.chat2:useDefaultOutput(true) -- need to be executed if your gamemode doesn't output any messages to chat in onPlayerChat event handlers. As an example: play gamemode already uses its own output so you don't need to enable default output, but race gamemode doesn't have it, so you need to enable default output.
+  -- need to be executed if your gamemode doesn't output any messages to chat in
+  -- onPlayerChat event handlers. As an example: play gamemode already uses its own output
+  -- so you don't need to enable default output, but race gamemode doesn't have it,
+  -- so you need to enable default output.
+  exports.chat2:useDefaultOutput(true)
 end)
 
 addEventHandler("onPlayerJoin", root, function()
