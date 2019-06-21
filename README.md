@@ -40,12 +40,6 @@ This chat uses CEF and it tries to simulate behavior of default chat
 
 ## API
 
-The resource intercepts `outputChatBox`, `clearChatBox` and `showChat` function calls and redirect their calls to internal `output`, `clear`, `show` so you can still use default MTA functions as before and all of your resources should probably work correct.
-
-**WARNING!** THIS FUNCTIONS DO NOT RETURN ANY VALUES NO MORE AS BEFORE. IF YOU RELY ON RETURN VALUES, THEN YOU SHOULD REWRITE YOUR CODE OR DO NOT USE THIS RESOURCE AT ALL!
-
-After reviewing of all default mta resources code for just to be sure that there is no code that rely on return values, I made decision to change behavior of these functions. Also this decision was made when I realize that this resource is useless without easy integration in existing ecosystem. Noone will rewrite their codebase for just replacing one chat with another. And after all, some closed resources may use default chat API and you probably will not be able to change that. Sorry for this dirty hack. I apologize for it.
-
 ### Clientside
 
 #### Functions
@@ -71,7 +65,7 @@ After reviewing of all default mta resources code for just to be sure that there
 
 ```lua
 addEventHandler("onResourceStart", resourceRoot, function()
-  exports.chat2:useDefaultOutput(true) -- need to be executed if your gamemode doesn't output any messages to chat in onPlayerChat event handlers. As an example: play gamemode already uses its own output so you don't need to enable default output, but race gamemode doesn't have it, so you need to enable it.
+  -- exports.chat2:useDefaultOutput(true) -- need to be executed if your gamemode doesn't output any messages to chat in onPlayerChat event handlers. As an example: play gamemode already uses its own output so you don't need to enable default output, but race gamemode doesn't have it, so you need to enable default output.
 end)
 
 addEventHandler("onPlayerJoin", root, function()
@@ -87,3 +81,13 @@ addEventHandler("onPlayerChat", root, function(message, messageType)
   end
 end)
 ```
+
+### FAQ
+
+- #### I started this resource but I don't see a chat
+
+  You should execute `exports.chat2:useDefaultOutput(true)` because your gamemode doesn't have built-in output
+
+- #### How can I add new input types for, let's say, global/local/private chats?
+
+  You need to add new entries in clientside `inputKeyButtons` table with unique `messageType` values and then process this messageTypes in `onPlayerChat` event handlers
