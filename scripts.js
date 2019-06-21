@@ -1,21 +1,13 @@
 const keyCodes = {
   enter: 13,
-  tab: 9,
-  pageUp: 33,
-  pageDown: 34
+  tab: 9
 };
 
 const state = {
-  show: true,
-  showInput: false,
-  inputMessage: "",
   scroll: false,
   canScrollToBottom: true,
   lastRegisteredDelayCallback: null
 };
-
-const say = "say";
-const teamsay = "teamsay";
 
 const hexRegex = /#[0-9A-F]{6}/gi;
 
@@ -77,17 +69,21 @@ function preventPressTab(e) {
   if (e.keyCode == keyCodes.tab) e.preventDefault();
 }
 
+// renders message in chat container
 function render(message) {
   const messageElement = document.createElement("div");
   messageElement.classList.add("chat__message");
   const messageFragment = document.createDocumentFragment();
 
-  processTextWithHexCode(message).forEach(({ text, color }) => {
+  const processedText = processTextWithHexCode(message);
+  for (let index = 0; index < processedText.length; index++) {
+    const { text, color } = processedText[index];
+
     const partElement = document.createElement("span");
     partElement.innerText = text;
     partElement.style.color = color;
     messageFragment.appendChild(partElement);
-  });
+  }
 
   messageElement.append(messageFragment);
   elements.chatMessagesContainer.append(messageElement);
@@ -118,6 +114,8 @@ function processTextWithHexCode(text) {
   return results;
 }
 
+// responds for automatic scrolling to bottom after some time if user didn't
+// scroll manually yet
 function registerDelayCallback() {
   state.canScrollToBottom = false;
 
@@ -138,6 +136,7 @@ function registerDelayCallback() {
   setTimeout(callback, 5000);
 }
 
+// sends message to clientside
 function onKeydownEnterButton(ev) {
   if (ev.keyCode !== keyCodes.enter) return;
   mta.triggerEvent("onChat2EnterButton", elements.input.value);
