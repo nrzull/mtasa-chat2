@@ -1,5 +1,5 @@
 <meta>
-  <info name="chat2" type="script" version="0.4.0" author="nrzull" />
+  <info name="chat2" type="script" version="1.0.0" author="nrzull" />
 
   <script src="chat2_shared.lua" type="shared" />
   <script src="chat2_server.lua" type="server" />
