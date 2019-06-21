@@ -94,4 +94,4 @@ end)
 
 - #### How can I add new input types for, let's say, global/local/private chats?
 
-  You need to add new entries in clientside `inputKeyButtons` table with unique `messageType` values and then process this messageTypes in `onPlayerChat` event handlers
+  You need to add new entries in clientside [inputKeyButtons](https://github.com/nrzull/mtasa-chat2/blob/master/chat2_client.lua#L11) table with unique `messageType` values and then process this messageTypes in `onPlayerChat` event handlers
