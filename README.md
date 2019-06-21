@@ -84,9 +84,13 @@ end)
 
 ### FAQ
 
-- #### I started this resource but I don't see a chat
+- #### I started this resource but I don't see the chat
 
   You should execute `exports.chat2:useDefaultOutput(true)` because your gamemode doesn't have built-in output
+
+- #### The chat shows the same messages twice
+
+  Execute `exports.chat2:useDefaultOutput(false)` somewhere in your code
 
 - #### How can I add new input types for, let's say, global/local/private chats?
 
