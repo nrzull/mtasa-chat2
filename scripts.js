@@ -37,6 +37,7 @@ function showInput([definition]) {
   setTimeout(() => {
     elements.input.focus();
     document.addEventListener("keydown", onKeydownEnterButton);
+    document.addEventListener("click", onBlur);
   }, 0);
 }
 
@@ -44,6 +45,7 @@ function hideInput() {
   elements.inputBlock.classList.add("hidden");
   elements.input.blur();
   document.removeEventListener("keydown", onKeydownEnterButton);
+  document.removeEventListener("click", onBlur);
 }
 
 function addMessage([message]) {
@@ -146,6 +148,10 @@ function onKeydownEnterButton(ev) {
 function startScroll([definition]) {
   state.scroll = true;
   scroll(definition);
+}
+
+function onBlur() {
+  elements.input.focus();
 }
 
 function stopScroll() {
