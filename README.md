@@ -62,7 +62,7 @@ The chat uses CEF and it tries to simulate behavior of default chat
 - `exports.chat2:useDefaultOutput(bool) -> void`
   Enable/disable default output. If you disable it, then you need to write your own custom handlers for `onPlayerChat` event
 
-### Examples:
+### Examples
 
 ```lua
 addEventHandler("onResourceStart", resourceRoot, function()
