@@ -181,6 +181,11 @@ end
 
 function onClientResourceStop()
   showChat(false)
+
+  if state.activeInputKeyButton then
+    guiSetInputEnabled(false)
+  end
+
   removeDebugHook("preFunction", listenForShowChat)
   removeDebugHook("preFunction", listenForOutputChatBox)
   removeDebugHook("preFunction", listenForClearChatBox)
