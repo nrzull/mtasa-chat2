@@ -98,6 +98,7 @@ end
 function onChatLoaded()
   chatInstanceLoaded = true
   focusBrowser(chatInstance)
+  adoptFont()
 end
 
 function onChatInputButton(_, _, keyButton, definition)
@@ -190,6 +191,27 @@ function onClientResourceStop()
   removeDebugHook("preFunction", listenForOutputChatBox)
   removeDebugHook("preFunction", listenForClearChatBox)
   showChat(true)
+end
+
+function getAspectRatio()
+  local dxResolution
+  local dw, dh = guiGetScreenSize()
+  local aspectRatio = math.round( dw / dh, 2 )
+  local dxAspectRatio = "16:9"
+  if aspectRatio == 1.33 then dxAspectRatio = "4:3"
+  elseif aspectRatio == 1.25 then dxAspectRatio = "5:4"
+  elseif aspectRatio == 1.77 then dxAspectRatio = "16:9"
+  end
+  return dxAspectRatio
+end
+
+function adoptFont()
+  if getAspectRatio() ~= "16:9" then 
+    executeBrowserJavascript(chatInstance,
+    "let stylesElement = document.createElement('style');" ..
+    'stylesElement.innerHTML = ".chat__message {font-size: 4vh} .chat__input {font-size: 4vh}";' ..
+    'document.body.appendChild(stylesElement);')
+  end
 end
 
 addEventHandler("onChat2Loaded", resourceRoot, onChatLoaded)
