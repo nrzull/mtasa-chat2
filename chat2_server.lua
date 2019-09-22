@@ -1,7 +1,6 @@
-addEvent("onChat2SendMessage", true)
-addEvent("onPlayerChat2")
+addEvent("onChat2Message", true)
 
-local isDefaultOutput = true
+local isDefaultOutput = false
 local minLength = 1
 local maxLength = 96
 
@@ -13,54 +12,35 @@ function show(player, bool)
   triggerClientEvent(player, "onChat2Show", player, bool)
 end
 
-function isVisible(player)
-  return getElementData(player, "chat2IsVisible", false)
-end
-
 function output(player, message)
   triggerClientEvent(player, "onChat2Output", player, message)
 end
 
-function useCustomEventHandlers(bool)
-  isDefaultOutput = not bool
+function useDefaultOutput(bool)
+  isDefaultOutput = bool
 end
 
-function RGBToHex(red, green, blue)
-  if (red < 0 or red > 255 or green < 0 or green > 255 or blue < 0 or blue > 255) then
-    return nil
-  end
-
-  return string.format("#%.2X%.2X%.2X", red, green, blue)
-end
-
-function onChatSendMessage(message, messageType)
-  if type(message) ~= "string" or utf8.len(message) < minLength or utf8.len(message) > maxLength then
-    return
-  end
-
-  if messageType ~= "0" and messageType ~= "2" then
-    return
-  end
-
-  if utf8.sub(message, 0, 1) == "/" then
-    handleCommand(client, message)
-    return
-  end
-
-  messageType = tonumber(messageType)
-
+function onPlayerChat(message, messageType)
   if not isDefaultOutput then
-    triggerEvent("onPlayerChat2", root, client, message, messageType)
     return
   end
 
-  defaultOutput(client, message, messageType)
-end
+  if messageType ~= 0 and messageType ~= 2 then
+    return
+  end
 
-function defaultOutput(sender, message, messageType)
+  local sender = source
   local nickname = getPlayerName(sender)
+  local nicknameColor = ""
+  local r, g, b = getPlayerNametagColor(sender)
+
+  if (r and g and b) then
+    nicknameColor = RGBToHex(r, g, b)
+    nickname = string.format("%s%s", nicknameColor, nickname)
+  end
+
   local team = getPlayerTeam(sender)
-  local text = string.format("%s#ffffff: %s", nickname, message)
+  local text = string.format("%s: #ffffff%s", nickname, message)
   local teamColor
 
   if team then
@@ -85,30 +65,79 @@ function defaultOutput(sender, message, messageType)
     end
   end
 
-  outputServerLog(pregReplace(text, "#[a-f0-9]{6}", "", "i"))
+  local serverLogMessage = pregReplace(text, "#[a-f0-9]{6}", "", "i")
+  if type(serverLogMessage) ~= "string" then
+    serverLogMessage = text
+  end
+
+  outputServerLog(serverLogMessage)
 end
 
 function handleCommand(client, input)
   local splittedInput = split(input, " ")
   local slashCmd = table.remove(splittedInput, 1)
   local cmd = utf8.sub(slashCmd, 2, utf8.len(slashCmd))
-  executeCommandHandler(cmd, client, unpack(splittedInput))
-end
 
--- listen for "say / teamsay" from player console
-function onPlayerChat(message, messageType)
-  if isDefaultOutput then
-    defaultOutput(source, message, messageType)
+  local args = ""
+  for _, arg in ipairs(splittedInput) do
+    args = string.format("%s %s", args, arg)
   end
+  args = utf8.sub(args, 2, utf8.len(args))
+
+  executeCommandHandler(cmd, client, args)
 end
 
--- listen for messages that were sent from resources
-function onChatMessage(message, elementOrResource)
-  if not isElement(elementOrResource) then
-    output(root, message)
+function onChatMessage(message, messageType)
+  if type(message) ~= "string" or utf8.len(message) < minLength or utf8.len(message) > maxLength then
+    return
   end
+
+  if type(messageType) ~= "number" then
+    return
+  end
+
+  if utf8.sub(message, 0, 1) == "/" then
+    return handleCommand(client, message)
+  end
+
+  triggerEvent("onPlayerChat", client, message, messageType)
 end
 
-addEventHandler("onChat2SendMessage", resourceRoot, onChatSendMessage)
+function listenForOutputChatBox(_, _, _, _, _, message, receiver, r, g, b)
+  receiver = receiver or root
+  local hexColor = ""
+
+  if (r and g and b) then
+    hexColor = RGBToHex(r, g, b)
+  end
+
+  output(receiver, string.format("%s%s", hexColor, message))
+  return "skip"
+end
+
+function listenForShowChat(_, _, _, _, _, player, bool)
+  show(player, bool)
+  return "skip"
+end
+
+function listenForClearChatBox(_, _, _, _, _, player)
+  clear(player)
+  return "skip"
+end
+
+function onResourceStart()
+  addDebugHook("preFunction", listenForOutputChatBox, {"outputChatBox"})
+  addDebugHook("preFunction", listenForShowChat, {"showChat"})
+  addDebugHook("preFunction", listenForClearChatBox, {"clearChatBox"})
+end
+
+function onResourceStop()
+  removeDebugHook("preFunction", listenForOutputChatBox)
+  removeDebugHook("preFunction", listenForShowChat)
+  removeDebugHook("preFunction", listenForClearChatBox)
+end
+
 addEventHandler("onPlayerChat", root, onPlayerChat)
-addEventHandler("onChatMessage", root, onChatMessage)
+addEventHandler("onChat2Message", resourceRoot, onChatMessage)
+addEventHandler("onResourceStart", resourceRoot, onResourceStart)
+addEventHandler("onResourceStop", resourceRoot, onResourceStop)
